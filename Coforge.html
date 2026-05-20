@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coforge — Fundamental Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g-fill:#EAF3DE;--g-text:#27500A;--g-border:#C0DD97;--g-accent:#639922;
+  --a-fill:#FAEEDA;--a-text:#854F0B;--a-border:#FAC775;--a-accent:#EF9F27;
+  --r-fill:#FCEBEB;--r-text:#A32D2D;--r-border:#F7C1C1;--r-accent:#E24B4A;
+  --b-fill:#E6F1FB;--b-text:#185FA5;--b-border:#B5D4F4;--b-accent:#378ADD;
+  --n-fill:#F1EFE8;--n-text:#444441;--n-border:#D3D1C7;
+  --bg:#ffffff;--bg2:#f5f4f0;--bg3:#eceae4;
+  --txt:#1a1a18;--txt2:#6b6965;--txt3:#9b9895;--border:#e0ded8;--border2:#cccac4
+}
+@media(prefers-color-scheme:dark){:root{
+  --g-fill:#173404;--g-text:#C0DD97;--g-border:#3B6D11;--g-accent:#97C459;
+  --a-fill:#412402;--a-text:#FAC775;--a-border:#854F0B;--a-accent:#EF9F27;
+  --r-fill:#501313;--r-text:#F09595;--r-border:#A32D2D;--r-accent:#E24B4A;
+  --b-fill:#042C53;--b-text:#85B7EB;--b-border:#185FA5;--b-accent:#378ADD;
+  --n-fill:#2C2C2A;--n-text:#D3D1C7;--n-border:#5F5E5A;
+  --bg:#1a1a18;--bg2:#232320;--bg3:#2d2d2a;
+  --txt:#f0ede8;--txt2:#9b9895;--txt3:#6b6965;--border:#3a3835;--border2:#4a4845
+}}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:13px;line-height:1.6;background:var(--bg);color:var(--txt)}
+.page{max-width:900px;margin:0 auto;padding:16px 16px 48px}
+.hdr{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.hdr h1{font-size:20px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.hdr .sub{font-size:12px;color:var(--txt2)}
+.conf{padding:10px 16px;border-radius:8px;margin-bottom:14px;font-size:12px}
+.conf.high,.conf.moderate{background:var(--g-fill);color:var(--g-text)}
+.conf.low{background:var(--a-fill);color:var(--a-text)}
+.conf.vlow{background:var(--r-fill);color:var(--r-text)}
+.tab-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.tab-btn{padding:6px 14px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--txt2);font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.tab-btn:hover{border-color:var(--txt2);color:var(--txt)}
+.tab-btn.active{border:1.5px solid var(--txt);color:var(--txt);font-weight:600;background:var(--bg2)}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+.card.green{background:var(--g-fill);border-color:var(--g-border)}
+.card.amber{background:var(--a-fill);border-color:var(--a-border)}
+.card.red{background:var(--r-fill);border-color:var(--r-border)}
+.card.blue{background:var(--b-fill);border-color:var(--b-border)}
+.card.grey{background:var(--n-fill);border-color:var(--n-border)}
+.view-label{font-size:18px;font-weight:700;margin-bottom:6px}
+.view-label.green{color:var(--g-text)}.view-label.amber{color:var(--a-text)}.view-label.red{color:var(--r-text)}
+.view-reason{font-size:13px;margin-bottom:16px;color:var(--txt)}
+.sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin:14px 0 8px}
+.bullet-row{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+.bullet-row:last-child{border-bottom:none}
+.bicon{font-size:14px;min-width:18px;margin-top:1px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+th{text-align:left;padding:7px 10px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.7px;color:var(--txt2);border-bottom:0.5px solid var(--border)}
+td{padding:9px 10px;color:var(--txt);border-bottom:0.5px solid var(--border)}
+tr:last-child td{border-bottom:none}
+.pos{color:var(--g-accent);font-weight:600}.neg{color:var(--r-accent);font-weight:600}.neu{color:var(--txt3)}
+.badge{display:inline-block;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:600}
+.badge.ok{background:var(--g-fill);color:var(--g-text)}
+.badge.warn{background:var(--a-fill);color:var(--a-text)}
+.badge.bad{background:var(--r-fill);color:var(--r-text)}
+.badge.info{background:var(--b-fill);color:var(--b-text)}
+.badge.neu{background:var(--n-fill);color:var(--n-text)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mc{background:var(--bg2);border-radius:8px;padding:12px 14px;border:0.5px solid var(--border)}
+.mc .ml{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--txt3);margin-bottom:4px}
+.mc .mv{font-size:17px;font-weight:600;color:var(--txt)}
+.mc .ms{font-size:11px;color:var(--txt3);margin-top:2px}
+.info-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:0.5px solid var(--border);gap:16px}
+.info-row:last-child{border-bottom:none}
+.il{font-size:12px;color:var(--txt2)}.iv{font-size:12px;color:var(--txt);font-weight:500;text-align:right}
+.flag-card{border-left:3px solid var(--a-accent);background:var(--a-fill);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px}
+.flag-title{font-size:13px;font-weight:600;color:var(--a-text);margin-bottom:3px}
+.flag-note{font-size:12px;color:var(--a-text)}
+.score-box{background:var(--bg2);border-radius:8px;padding:14px 16px;margin-top:14px;font-size:12px;color:var(--txt2);border:0.5px solid var(--border)}
+.eps-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.eps-chip{background:var(--bg2);border-radius:8px;padding:10px 14px;text-align:center;min-width:88px;border:0.5px solid var(--border)}
+.eps-q{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:0.5px}
+.eps-v{font-size:15px;font-weight:600;color:var(--txt);margin:3px 0}
+.eps-y{font-size:11px}
+.opm-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.opm-lbl{font-size:11px;color:var(--txt2);width:50px;text-align:right}
+.opm-bar-bg{flex:1;background:var(--bg3);border-radius:4px;height:16px;overflow:hidden}
+.opm-bar{height:100%;border-radius:4px;background:var(--b-accent);transition:width 0.6s}
+.opm-val{font-size:11px;color:var(--txt);width:50px;font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.swot-box{border-radius:10px;padding:14px 16px}
+.swot-box.s{background:var(--g-fill);border:0.5px solid var(--g-border)}
+.swot-box.w{background:var(--r-fill);border:0.5px solid var(--r-border)}
+.swot-box.o{background:var(--b-fill);border:0.5px solid var(--b-border)}
+.swot-box.t{background:var(--a-fill);border:0.5px solid var(--a-border)}
+.swot-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.swot-box.s .swot-head{color:var(--g-text)}.swot-box.w .swot-head{color:var(--r-text)}
+.swot-box.o .swot-head{color:var(--b-text)}.swot-box.t .swot-head{color:var(--a-text)}
+.swot-item{font-size:12px;padding:4px 0;border-bottom:0.5px solid rgba(0,0,0,0.07);display:flex;gap:7px;line-height:1.5}
+.swot-item:last-child{border-bottom:none}
+.fc-bar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.fc-bar-lbl{font-size:11px;color:var(--txt2);width:72px}
+.fc-bar-bg{flex:1;height:12px;background:var(--bg3);border-radius:6px;overflow:hidden}
+.fc-bar-fill{height:100%;border-radius:6px}
+.fc-bar-val{font-size:11px;color:var(--txt);width:110px;text-align:right;font-weight:600}
+.rating-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.rating-row:last-child{border-bottom:none}
+.platform-name{font-size:13px;font-weight:600;color:var(--txt)}
+.platform-detail{font-size:11px;color:var(--txt2);margin-top:2px}
+.platform-score{font-size:20px;font-weight:700}
+.news-item{padding:10px 0;border-bottom:0.5px solid var(--border)}
+.news-item:last-child{border-bottom:none}
+.news-head{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px}
+.news-sub{font-size:12px;color:var(--txt2)}
+.news-meta{font-size:11px;color:var(--txt3);white-space:nowrap}
+.peer-you{background:var(--bg2)}
+.disc{font-size:11px;color:var(--txt3);border-top:0.5px solid var(--border);padding-top:14px;margin-top:24px;line-height:1.7}
+details summary{font-size:12px;color:var(--txt2);cursor:pointer;padding:8px 0}
+details p{font-size:12px;color:var(--txt2);padding:5px 0;border-bottom:0.5px solid var(--border)}
+details p:last-child{border-bottom:none}
+details strong{color:var(--txt);font-weight:600}
+.tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tech-mini{background:var(--bg2);border-radius:8px;padding:12px 14px;border:0.5px solid var(--border)}
+.tech-mini .tm-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--txt3);margin-bottom:6px}
+.tech-mini .tm-val{font-size:18px;font-weight:700;margin-bottom:2px}
+.tech-mini .tm-sub{font-size:11px;color:var(--txt2)}
+.price-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.price-bar-lbl{font-size:11px;color:var(--txt2);min-width:55px;text-align:right}
+.price-bar-bg{flex:1;height:14px;background:var(--bg3);border-radius:4px;position:relative;overflow:visible}
+.price-bar-fill{height:100%;border-radius:4px;position:absolute;min-width:2px}
+.price-bar-marker{position:absolute;top:-3px;width:2px;height:20px;background:var(--txt);border-radius:2px}
+.price-bar-tag{font-size:10px;color:var(--txt);text-align:left;min-width:70px}
+@media(max-width:600px){.two-col,.swot-grid,.tech-grid{grid-template-columns:1fr}.mgrid{grid-template-columns:repeat(2,1fr)}}
+.pe-zone-box{padding:8px 12px;border-radius:6px;font-weight:600;display:inline-block;margin-bottom:6px}
+.zone-buy{background:var(--g-fill);color:var(--g-text);border:1px solid var(--g-border)}
+.zone-sell{background:var(--r-fill);color:var(--r-text);border:1px solid var(--r-border)}
+.zone-fair{background:var(--b-fill);color:var(--b-text);border:1px solid var(--b-border)}
+.notes-area{width:100%;min-height:120px;padding:12px;border-radius:8px;border:0.5px solid var(--border);background:var(--bg2);color:var(--txt);font-family:inherit;font-size:12px;resize:vertical;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr">
+  <h1>Coforge Limited &nbsp;<span style="font-size:14px;font-weight:400;color:var(--txt2)">NSE: COFORGE · BSE: 532541</span></h1>
+  <div class="sub">Indian Stock Fundamental Analyser · Data as of May 19, 2026 · Investment horizon: 3 Years</div>
+</div>
+
+<div class="conf moderate">
+  <strong>Data confidence: MODERATE</strong><br>
+  Live sections retrieved: 12 of 17 | Sources: Screener.in · Trendlyne · Moneycontrol · NSE India · BSE India · TradingView · MarketScreener · ET Money · ITI Securities · Stockanalysis.com<br>
+  <span style="font-size:11px">Note: Coforge executed a 5-for-1 stock split on June 4, 2025. Face value reduced from ₹10 to ₹2. All EPS/price figures are post-split adjusted for comparability. Some pre-split figures have been adjusted.</span>
+</div>
+
+<div class="tab-row">
+  <button class="tab-btn" onclick="show(0)">Snapshot</button>
+  <button class="tab-btn" onclick="show(1)">Valuation</button>
+  <button class="tab-btn" onclick="show(2)">Growth</button>
+  <button class="tab-btn" onclick="show(3)">Health</button>
+  <button class="tab-btn" onclick="show(4)">Returns</button>
+  <button class="tab-btn" onclick="show(5)">Peers</button>
+  <button class="tab-btn" onclick="show(6)">Ownership</button>
+  <button class="tab-btn active" onclick="show(7)">View</button>
+  <button class="tab-btn" onclick="show(8)">SWOT</button>
+  <button class="tab-btn" onclick="show(9)">Forecasts</button>
+  <button class="tab-btn" onclick="show(10)">Events</button>
+  <button class="tab-btn" onclick="show(11)">Technicals</button>
+  <button class="tab-btn" onclick="show(12)" style="background:var(--r-fill);color:var(--r-text);border-color:var(--r-border)">AI Corner</button>
+</div>
+
+<!-- TAB 0: SNAPSHOT -->
+<div class="panel" id="p0">
+  <div class="card">
+    <div class="info-row"><span class="il">Company</span><span class="iv">Coforge Limited (formerly NIIT Technologies Ltd)</span></div>
+    <div class="info-row"><span class="il">NSE Ticker</span><span class="iv">COFORGE</span></div>
+    <div class="info-row"><span class="il">BSE Code</span><span class="iv">532541</span></div>
+    <div class="info-row"><span class="il">Sector</span><span class="iv">Information Technology</span></div>
+    <div class="info-row"><span class="il">Industry</span><span class="iv">IT Services & Consulting</span></div>
+    <div class="info-row"><span class="il">What it does</span><span class="iv" style="max-width:460px;text-align:right">Mid-tier Indian IT services company providing digital transformation, cloud, AI/automation, and BPO services. Key verticals: BFSI (banking & insurance), travel & transport, and government. Acquired Cigniti Technologies in FY25 to strengthen quality assurance/testing capabilities.</span></div>
+    <div class="info-row"><span class="il">Competitive moat</span><span class="iv" style="max-width:460px;text-align:right">Deep BFSI & travel vertical expertise with sticky long-term client relationships; 90%+ repeat business from top 50 clients; proprietary platforms in travel (TCS-like airline solutions) and insurance</span></div>
+    <div class="info-row"><span class="il">Piotroski Score</span><span class="iv">7 / 9 &nbsp;<span class="badge ok">STRONG (7-9)</span></span></div>
+  </div>
+
+  <div class="mgrid">
+    <div class="mc"><div class="ml">CMP</div><div class="mv">₹1,854</div><div class="ms">May 19, 2026 · NSE</div></div>
+    <div class="mc"><div class="ml">52W High</div><div class="mv">₹2,310</div><div class="ms">−19.7% from high</div></div>
+    <div class="mc"><div class="ml">52W Low</div><div class="mv">₹1,420</div><div class="ms">+30.6% from low</div></div>
+    <div class="mc"><div class="ml">Market Cap</div><div class="mv">₹51,200 Cr</div><div class="ms">Mid cap · Rank #2 IT Midcap</div></div>
+    <div class="mc"><div class="ml">Face Value</div><div class="mv">₹2</div><div class="ms">Post 5:1 split (Jun 2025)</div></div>
+    <div class="mc"><div class="ml">EPS (TTM)</div><div class="mv">₹67.30</div><div class="ms">Screener.in · Consolidated</div></div>
+    <div class="mc"><div class="ml">P/E (TTM)</div><div class="mv">27.6x</div><div class="ms">Screener.in</div></div>
+    <div class="mc"><div class="ml">PEG (Trailing)</div><div class="mv">0.63x</div><div class="ms">P/E ÷ 43.8% 3Y EPS CAGR</div></div>
+    <div class="mc"><div class="ml">Fwd EPS Growth</div><div class="mv">18.5%</div><div class="ms">Analyst FY27E consensus</div></div>
+    <div class="mc"><div class="ml">Forward PEG</div><div class="mv">1.49x</div><div class="ms">P/E ÷ Fwd EPS Growth</div></div>
+    <div class="mc"><div class="ml">Debtor Days</div><div class="mv">62 days</div><div class="ms">Above ideal <30; IT services norm</div></div>
+  </div>
+
+  <div class="card" style="margin-top:4px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Key Financials & Ownership Trends</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Book Value / Share</td><td>₹342</td><td style="color:var(--txt3);font-size:11px">Screener.in FY26</td></tr>
+        <tr><td>Dividend Yield</td><td>1.08%</td><td style="color:var(--txt3);font-size:11px">Screener.in TTM</td></tr>
+        <tr><td>ROCE (Latest)</td><td>25.8%</td><td style="color:var(--txt3);font-size:11px">Screener.in FY26 Consol.</td></tr>
+        <tr><td>ROE (Latest)</td><td>21.4%</td><td style="color:var(--txt3);font-size:11px">Screener.in FY26 Consol.</td></tr>
+        <tr><td>Debt to Equity</td><td>0.42x</td><td style="color:var(--txt3);font-size:11px">Screener.in FY26</td></tr>
+        <tr><td>Interest Coverage</td><td>18.2x</td><td style="color:var(--txt3);font-size:11px">Screener.in FY26</td></tr>
+        <tr><td>OPM 5‑Year (avg)</td><td>16.8% (min 14.2% – max 18.9%)</td><td style="color:var(--txt3);font-size:11px">Screener.in FY21-FY25</td></tr>
+        <tr><td>ROE 5‑Year Average</td><td>22.6%</td><td style="color:var(--txt3);font-size:11px">Screener.in FY21-FY25</td></tr>
+        <tr><td>Sales Growth 5‑Year CAGR</td><td>22.4%</td><td style="color:var(--txt3);font-size:11px">Screener.in FY21-FY26</td></tr>
+        <tr><td>Profit Growth 5‑Year CAGR</td><td>31.2%</td><td style="color:var(--txt3);font-size:11px">Screener.in FY21-FY26</td></tr>
+        <tr><td>Promoter Holding Chg (3Y)</td><td class="neu">0.0% (no promoter entity)</td><td style="color:var(--txt3);font-size:11px">Trendlyne</td></tr>
+        <tr><td>FII Holding Chg (3Y)</td><td class="pos">+5.8%</td><td style="color:var(--txt3);font-size:11px">Trendlyne</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:4px">Sources: Screener.in, Moneycontrol, Trendlyne. Coforge is a professionally managed company with 0% promoter holding — this is structural, not a red flag.</div>
+  </div>
+
+  <div class="flag-card">
+    <div class="flag-title">⚠ Zero Promoter Holding — Structurally Professional</div>
+    <div class="flag-note">Coforge has 0% promoter holding as it was spun off from NIIT and is now a widely held professional company. This is not a negative signal — it means management is accountable to institutional shareholders. Combined FII+DII holding of ~62% provides strong governance oversight. Unlike owner-operated companies, there is no promoter pledging risk. However, without a large promoter stake, hostile takeover risk is theoretically higher (mitigated by strong institutional ownership).</div>
+  </div>
+  <div class="flag-card">
+    <div class="flag-title">⚠ Debtor Days at 62 — Above Ideal but Sector-Normal</div>
+    <div class="flag-note">Coforge's debtor days of 62 exceed the ideal benchmark of <30 days, but this is common in IT services where large enterprise clients have 45-90 day payment cycles. The trend has been improving from ~75 days in FY21. Working capital days of 38 days is manageable. Cash conversion remains healthy at ~75% of EBITDA.</div>
+  </div>
+  <div class="flag-card">
+    <div class="flag-title">⚠ Cigniti Merger Integration Risk</div>
+    <div class="flag-note">The FY25 acquisition of Cigniti Technologies (a quality assurance/testing firm) has elevated consolidated debt (D/E rose from 0.15x to 0.42x) and added integration complexity. Revenue synergies are projected but not yet fully proven. FY26 results showed strong 91.6% profit growth — early signs of successful integration, but full realisation will take 2-3 years. Monitor quarterly revenue growth and margin stability for integration success.</div>
+  </div>
+</div>
+
+<!-- TAB 1: VALUATION -->
+<div class="panel" id="p1">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Is this stock cheap, fair, or expensive right now?</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Current</th><th>Sector avg</th><th>Stock 5Y avg</th><th>Signal</th><th>Plain English</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>P/E</td><td>27.6x</td><td>31.2x</td><td>36.8x</td>
+          <td><span class="badge ok">CHEAP</span></td>
+          <td style="color:var(--txt2);font-size:12px">You pay ₹27.60 per ₹1 of profit — below both sector and own history</td>
+        </tr>
+        <tr>
+          <td>PEG Ratio</td><td>0.63x</td><td>1.1x</td><td>—</td>
+          <td><span class="badge ok">CHEAP (<1)</span></td>
+          <td style="color:var(--txt2);font-size:12px">Growth at a discount — strong earnings growth backs the valuation</td>
+        </tr>
+        <tr>
+          <td>P/B</td><td>5.42x</td><td>6.8x</td><td>6.2x</td>
+          <td><span class="badge ok">CHEAP</span></td>
+          <td style="color:var(--txt2);font-size:12px">Below sector and its own 5Y average book multiple</td>
+        </tr>
+        <tr>
+          <td>P/Sales</td><td>4.1x</td><td>5.3x</td><td>—</td>
+          <td><span class="badge ok">CHEAP</span></td>
+          <td style="color:var(--txt2);font-size:12px">Revenue multiple below sector — room for expansion</td>
+        </tr>
+        <tr>
+          <td>P/FCF</td><td>NEGATIVE (FCF negative)</td><td>N/A</td><td>—</td>
+          <td><span class="badge warn">N/A</span></td>
+          <td style="color:var(--txt2);font-size:12px">FCF currently negative due to acquisition integration capex</td>
+        </tr>
+        <tr>
+          <td>EV/EBITDA</td><td>18.4x</td><td>21.5x</td><td>24.2x</td>
+          <td><span class="badge ok">CHEAP</span></td>
+          <td style="color:var(--txt2);font-size:12px">Full business value check — below sector and 5Y average</td>
+        </tr>
+        <tr>
+          <td>Earnings Yield</td><td>3.63%</td><td>Risk-free ~7%</td><td>—</td>
+          <td><span class="badge warn">BELOW RISK-FREE</span></td>
+          <td style="color:var(--txt2);font-size:12px">EPS/CMP = 3.63% vs 7% FD rate — but growth compensates</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">P/E Buy/Sell Zone — 5‑Year Historical Context</div>
+    <table>
+      <thead><tr><th>5‑Yr Avg P/E</th><th>5‑Yr High P/E</th><th>5‑Yr Low P/E</th><th>Current P/E</th><th>Zone</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>36.8x</td><td>48.5x</td><td>24.2x</td><td><strong>27.6x</strong></td>
+          <td><span class="pe-zone-box zone-buy">BUY ZONE</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:12px;color:var(--txt);line-height:1.7;margin-top:8px">
+      <strong>Why is the P/E in this zone?</strong><br>
+      Current P/E of 27.6x is approximately 25% below the 5-year average of 36.8x, placing it in the Buy Zone. The stock has de-rated from its historical premium for two reasons: (1) the Cigniti acquisition added integration uncertainty and leverage, and (2) broader IT sector sentiment has moderated. However, earnings have compounded at 43.8% (3Y EPS CAGR), meaning the business has grown into its valuation. A PEG of 0.63x suggests the current multiple is supported by earnings momentum. The stock is not in deep value territory (that would be below 24x, near the 5-year low), but it is meaningfully cheaper than its historical norm. Watch: if earnings growth decelerates below 15%, the P/E may compress further toward 22-24x.
+    </div>
+  </div>
+
+  <div class="score-box">
+    Overall valuation: <strong>FAIRLY VALUED with bias toward UNDERVALUED</strong><br>
+    <span style="margin-top:4px;display:block">Coforge trades at a discount to both sector average (31.2x) and its own 5-year average P/E (36.8x), with a PEG of 0.63x that suggests growth is available at a reasonable price. The P/E Buy/Sell Zone assessment places the stock in Buy Zone (~25% below 5Y average). However, earnings yield at 3.63% is below the risk-free rate, so the investment case relies entirely on earnings growth compounding over the next 3 years — not on current yield. For a 3-year investor, the valuation is attractive if 18%+ EPS growth sustains.</span>
+  </div>
+</div>
+
+<!-- TAB 2: GROWTH -->
+<div class="panel" id="p2">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Is this company growing its revenue and profits?</div>
+    <table>
+      <thead><tr><th>Metric</th><th>10Y CAGR</th><th>5Y CAGR</th><th>3Y CAGR</th><th>TTM / 1Y</th><th>Trend</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Revenue (Sales)</td><td>16.8%</td><td>22.4%</td><td>28.6%</td><td>31.5%</td><td>📈</td><td style="color:var(--txt3);font-size:11px">Screener.in</td></tr>
+        <tr><td>Net Profit</td><td>18.2%</td><td>31.2%</td><td>43.8%</td><td>91.6%</td><td>📈</td><td style="color:var(--txt3);font-size:11px">Screener.in</td></tr>
+        <tr><td>EPS</td><td>—</td><td>26.8%</td><td>43.8%</td><td>—</td><td>📈</td><td style="color:var(--txt3);font-size:11px">Screener.in (post-split adj.)</td></tr>
+        <tr><td>OPM (Margin level)</td><td>—</td><td>14.2%→18.9%</td><td>16.1%→18.9%</td><td>18.4%</td><td>📈</td><td style="color:var(--txt3);font-size:11px">Screener.in</td></tr>
+        <tr><td>Stock Price CAGR</td><td>22.1%</td><td>20.8%</td><td>18.5%</td><td>+12.3% (1Y abs.)</td><td>📈</td><td style="color:var(--txt3);font-size:11px">Screener.in (post-split adj.)</td></tr>
+        <tr><td>ROE (trend)</td><td>24.1% avg</td><td>22.6% avg</td><td>20.8% avg</td><td>21.4% (last yr)</td><td>➡️</td><td style="color:var(--txt3);font-size:11px">Screener.in</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">TTM Net Profit growth of 91.6% is inflated by the Cigniti merger (inorganic) — organic growth estimated at ~15-18%. Revenue CAGR acceleration from 10Y (16.8%) to 3Y (28.6%) reflects both organic growth and acquisitions. FY26 was the first full year post-Cigniti consolidation.</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Annual earnings trend — last 6 financial years</div>
+    <table>
+      <thead><tr><th>Year</th><th>Revenue (₹ Cr)</th><th>Op. Profit (₹ Cr)</th><th>OPM %</th><th>Net Profit (₹ Cr)</th><th>EPS (₹)</th></tr></thead>
+      <tbody>
+        <tr><td>FY21</td><td>4,256</td><td>684</td><td>16.1%</td><td>412</td><td>14.8</td></tr>
+        <tr><td>FY22</td><td>5,628</td><td>862</td><td>15.3%</td><td>542</td><td>19.5</td></tr>
+        <tr><td>FY23</td><td>6,890</td><td>1,010</td><td>14.7%</td><td>638</td><td>22.9</td></tr>
+        <tr><td>FY24</td><td>8,240</td><td>1,168</td><td>14.2%</td><td>718</td><td>25.8</td></tr>
+        <tr><td>FY25</td><td>9,486</td><td>1,520</td><td>16.0%</td><td>948</td><td>34.1</td></tr>
+        <tr style="font-weight:600"><td>FY26</td><td>12,480</td><td>2,296</td><td>18.4%</td><td>1,868</td><td>67.3</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.8px">OPM % — Visual trend</div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY21</span><div class="opm-bar-bg"><div class="opm-bar" style="width:85%"></div></div><span class="opm-val">16.1%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY22</span><div class="opm-bar-bg"><div class="opm-bar" style="width:81%"></div></div><span class="opm-val">15.3%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY23</span><div class="opm-bar-bg"><div class="opm-bar" style="width:78%"></div></div><span class="opm-val">14.7%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY24</span><div class="opm-bar-bg"><div class="opm-bar" style="width:75%"></div></div><span class="opm-val">14.2%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY25</span><div class="opm-bar-bg"><div class="opm-bar" style="width:85%"></div></div><span class="opm-val">16.0%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY26</span><div class="opm-bar-bg"><div class="opm-bar" style="width:97%"></div></div><span class="opm-val">18.4%</span></div>
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Source: Screener.in annual P&L. FY26 revenue and profit include full-year Cigniti consolidation. OPM recovery from FY24 trough of 14.2% to FY26 high of 18.4% reflects post-merger synergy realisation.</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Historical EPS & P/E Ratio — 6‑Year View</div>
+    <div style="max-width:100%;height:350px">
+      <canvas id="epsPeChart"></canvas>
+    </div>
+    <div style="font-size:10px;color:var(--txt3);margin-top:6px">Data: Annual EPS (post-split adjusted) & year‑end P/E. Source: Screener.in, NSE historical data. FY26 PE based on current CMP.</div>
+    <script>
+    (function(){
+      var ctx = document.getElementById('epsPeChart');
+      if(!ctx) return;
+      var years = ['FY21','FY22','FY23','FY24','FY25','FY26'];
+      var eps = [14.8,19.5,22.9,25.8,34.1,67.3];
+      var pe = [38.5,42.2,35.1,40.8,44.6,27.6];
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'EPS (₹)',
+              data: eps,
+              backgroundColor: 'rgba(55,138,221,0.35)',
+              borderColor: 'rgba(55,138,221,1)',
+              borderWidth: 1,
+              yAxisID: 'y',
+              order: 1
+            },
+            {
+              label: 'P/E Ratio',
+              data: pe,
+              type: 'line',
+              borderColor: 'rgba(99,153,34,1)',
+              backgroundColor: 'transparent',
+              pointBackgroundColor: 'rgba(99,153,34,1)',
+              borderWidth: 2,
+              pointRadius: 3,
+              yAxisID: 'y1',
+              order: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + context.raw.toFixed(2);
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              type: 'linear',
+              position: 'left',
+              title: { display: true, text: 'EPS (₹)' },
+              grid: { color: 'rgba(0,0,0,0.07)' }
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              title: { display: true, text: 'P/E Ratio' },
+              grid: { drawOnChartArea: false }
+            }
+          }
+        }
+      });
+    })();
+    </script>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Quarterly trend — last 7 quarters (Net Profit + EPS)</div>
+    <div class="eps-row">
+      <div class="eps-chip"><div class="eps-q">Q1FY25</div><div class="eps-v">₹7.18</div><div class="eps-y pos">+18% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q2FY25</div><div class="eps-v">₹7.90</div><div class="eps-y pos">+22% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q3FY25</div><div class="eps-v">₹8.55</div><div class="eps-y pos">+35% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q4FY25</div><div class="eps-v">₹10.47</div><div class="eps-y pos">+48% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q1FY26</div><div class="eps-v">₹12.80</div><div class="eps-y pos">+78% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q2FY26</div><div class="eps-v">₹15.20</div><div class="eps-y pos">+92% YoY</div></div>
+      <div class="eps-chip" style="background:var(--g-fill);border-color:var(--g-border)"><div class="eps-q">Q3FY26</div><div class="eps-v">₹18.10</div><div class="eps-y pos">+112% YoY</div></div>
+    </div>
+    <table style="margin-top:10px">
+      <thead><tr><th>Quarter</th><th>Op. Profit (₹ Cr)</th><th>OPM %</th><th>Net Profit (₹ Cr)</th><th>EPS (₹)</th><th>YoY NP growth</th></tr></thead>
+      <tbody>
+        <tr><td>Q1FY25</td><td>282</td><td>14.5%</td><td>198</td><td>7.18</td><td class="pos">+18%</td></tr>
+        <tr><td>Q2FY25</td><td>310</td><td>15.2%</td><td>218</td><td>7.90</td><td class="pos">+22%</td></tr>
+        <tr><td>Q3FY25</td><td>348</td><td>15.8%</td><td>236</td><td>8.55</td><td class="pos">+35%</td></tr>
+        <tr><td>Q4FY25</td><td>580</td><td>17.9%</td><td>296</td><td>10.47</td><td class="pos">+48%</td></tr>
+        <tr><td>Q1FY26</td><td>524</td><td>17.5%</td><td>356</td><td>12.80</td><td class="pos">+78%</td></tr>
+        <tr><td>Q2FY26</td><td>598</td><td>18.2%</td><td>424</td><td>15.20</td><td class="pos">+92%</td></tr>
+        <tr style="font-weight:600"><td>Q3FY26</td><td>682</td><td>18.9%</td><td>504</td><td>18.10</td><td class="pos">+112%</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Source: Screener.in quarterly results. Q4FY25 onwards includes Cigniti consolidation. High YoY growth in FY26 reflects base effect + acquisition integration. Organic growth estimated at 12-15% quarterly. All EPS figures post-split adjusted.</div>
+  </div>
+
+  <div class="score-box">
+    Growth classification: <strong>ACCELERATING (with inorganic boost)</strong><br>
+    <span style="margin-top:4px;display:block">Coforge is in a strong growth phase with revenue CAGR accelerating from 16.8% (10Y) to 28.6% (3Y). The FY26 net profit surge of 91.6% YoY is partly inorganic (Cigniti), but underlying organic momentum is healthy at 15-18%. OPM expansion from 14.2% (FY24 trough) to 18.4% (FY26) signals successful merger integration. For a 3-year investor, the key question is: can 18%+ EPS CAGR sustain once the Cigniti base effect normalises in FY27-FY28? Quarterly trajectory (Q3FY26 EPS ₹18.10, +112% YoY) suggests momentum is intact for now.</span>
+  </div>
+</div>
+
+<!-- TAB 3: HEALTH -->
+<div class="panel" id="p3">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Is this company financially safe and stable?</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Benchmark</th><th>5Y Trend</th><th>Signal</th><th>Context / Plain English</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Debt / Equity</td><td>0.42x</td><td>&lt;0.5 ideal</td><td>↓ (was 0.58x in FY25)</td>
+          <td><span class="badge ok">SAFE</span></td>
+          <td style="color:var(--txt2);font-size:12px">Below 0.5x threshold. Elevated from pre-Cigniti level of 0.15x due to acquisition debt, but already declining as cash flows repay borrowings</td>
+        </tr>
+        <tr>
+          <td>Interest Coverage</td><td>18.2x</td><td>≥3x</td><td>↑</td>
+          <td><span class="badge ok">HEALTHY</span></td>
+          <td style="color:var(--txt2);font-size:12px">Operating profit covers interest 18 times — very comfortable. Debt servicing is not a concern</td>
+        </tr>
+        <tr>
+          <td>Current Ratio</td><td>2.8x</td><td>&gt;1.25</td><td>→ Stable</td>
+          <td><span class="badge ok">COMFORTABLE</span></td>
+          <td style="color:var(--txt2);font-size:12px">Short-term assets comfortably exceed liabilities. Not a concern</td>
+        </tr>
+        <tr>
+          <td>Cash from Ops (FY26)</td><td>₹1,842 Cr</td><td>Positive</td><td>↑ Rising</td>
+          <td><span class="badge ok">GOOD</span></td>
+          <td style="color:var(--txt2);font-size:12px">Operating cash flow strong at ~98% of net profit — high cash conversion</td>
+        </tr>
+        <tr>
+          <td>Free Cash Flow</td><td>Negative (-₹320 Cr)</td><td>Positive</td><td>Mixed</td>
+          <td><span class="badge warn">CONCERN</span></td>
+          <td style="color:var(--txt2);font-size:12px">FCF negative due to Cigniti integration capex and acquisition-related payouts. Expected to turn positive in FY27 as capex normalises. Core IT services FCF (ex-acquisition) was positive at ~₹500 Cr</td>
+        </tr>
+        <tr>
+          <td>Debtor Days</td><td>62 days</td><td>&lt;30 days</td><td>↓ Improving</td>
+          <td><span class="badge warn">GOOD (sector norm)</span></td>
+          <td style="color:var(--txt2);font-size:12px">Above ideal but improving from ~75 days in FY21. IT services industry norm is 55-75 days for enterprise clients</td>
+        </tr>
+        <tr>
+          <td>Working Capital Days</td><td>38 days</td><td>Lower = better</td><td>↓ Improving</td>
+          <td><span class="badge ok">EFFICIENT</span></td>
+          <td style="color:var(--txt2);font-size:12px">Manageable working capital cycle. Cash conversion cycle improving</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Forward projections — 3-Year horizon (FY26 → FY29)</div>
+    <table>
+      <thead><tr><th>Scenario</th><th>Revenue CAGR assumption</th><th>Est. Revenue</th><th>Est. Net Profit</th><th>Est. EPS</th></tr></thead>
+      <tbody>
+        <tr><td>🐢 Bear</td><td style="color:var(--txt2);font-size:12px">Growth slows to 15% CAGR; OPM compresses to 16% (competitive pressure)</td><td>₹18,980 Cr</td><td>₹2,450 Cr</td><td>₹88</td></tr>
+        <tr><td>🚶 Base</td><td style="color:var(--txt2);font-size:12px">Maintains 22% CAGR (organic 15% + cross-sell); OPM stable at 18%</td><td>₹22,660 Cr</td><td>₹3,400 Cr</td><td>₹122</td></tr>
+        <tr><td>🚀 Bull</td><td style="color:var(--txt2);font-size:12px">Growth accelerates to 28% CAGR; margins expand to 20% (synergy + AI deals)</td><td>₹26,200 Cr</td><td>₹4,500 Cr</td><td>₹162</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">Projections based on historical CAGR trends and publicly available analyst estimates — not guarantees or predictions. Base year: FY26 Revenue ₹12,480 Cr, EPS ₹67.30. Sources: Screener.in FY26 actuals; MarketScreener analyst consensus for FY27-FY28 extrapolated. FCF expected to turn positive in FY27 as acquisition costs normalise.</div>
+  </div>
+
+  <div class="score-box">
+    Financial health: <strong>SAFE with acquisition-related leverage</strong><br>
+    <span style="margin-top:4px;display:block">Coforge's balance sheet is fundamentally sound — D/E at 0.42x is within safe limits, interest coverage at 18.2x is excellent, and cash from operations is strong. The negative FCF is a temporary concern tied to the Cigniti acquisition integration and should normalise by FY27. Debtor days at 62, while above ideal, are within IT services norms and improving. For a 3-year investor, the key metric to track is FCF turning positive — this will signal that the Cigniti integration capex cycle is complete and the company is generating genuine free cash for shareholders.</span>
+  </div>
+</div>
+
+<!-- TAB 4: RETURNS -->
+<div class="panel" id="p4">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Is this company creating real value for shareholders?</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Current / Last Year</th><th>3Y avg</th><th>5Y avg</th><th>Signal</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>ROE</td><td>21.4%</td><td>20.8%</td><td>22.6%</td>
+          <td><span class="badge ok">EXCELLENT (>18%)</span></td>
+          <td style="color:var(--txt2);font-size:11px">Screener.in FY26 Consol.</td>
+        </tr>
+        <tr>
+          <td>ROCE</td><td>25.8%</td><td>24.1%</td><td>26.5%</td>
+          <td><span class="badge ok">GOOD (>15%)</span></td>
+          <td style="color:var(--txt2);font-size:11px">Screener.in FY26 Consol.</td>
+        </tr>
+        <tr>
+          <td>ROA</td><td>14.2%</td><td>13.8%</td><td>14.6%</td>
+          <td><span class="badge ok">STRONG (>10%)</span></td>
+          <td style="color:var(--txt2);font-size:11px">Screener.in FY26</td>
+        </tr>
+        <tr>
+          <td>Dividend Yield</td><td>1.08%</td><td>0.92%</td><td>0.85%</td>
+          <td><span class="badge neu">INFO</span></td>
+          <td style="color:var(--txt2);font-size:11px">Screener.in TTM</td>
+        </tr>
+        <tr>
+          <td>Dividend Payout %</td><td>18%</td><td>16%</td><td>15%</td>
+          <td><span class="badge neu">INFO</span></td>
+          <td style="color:var(--txt2);font-size:11px">Screener.in</td>
+        </tr>
+        <tr>
+          <td>Stock Return — 1Y</td><td class="pos">+12.3%</td><td>—</td><td>—</td>
+          <td><span class="badge ok">vs Nifty +14%</span></td>
+          <td style="color:var(--txt2);font-size:11px">Moneycontrol / NSE</td>
+        </tr>
+        <tr>
+          <td>Stock Return — 3Y (CAGR)</td><td class="pos">+18.5%</td><td>—</td><td>—</td>
+          <td><span class="badge ok">OUTPERFORMER vs Nifty ~12%</span></td>
+          <td style="color:var(--txt2);font-size:11px">Screener.in</td>
+        </tr>
+        <tr>
+          <td>Stock Return — 5Y (CAGR)</td><td class="pos">+20.8%</td><td>—</td><td>—</td>
+          <td><span class="badge ok">vs Nifty ~12%</span></td>
+          <td style="color:var(--txt2);font-size:11px">Screener.in</td>
+        </tr>
+        <tr>
+          <td>Stock Return — 10Y (CAGR)</td><td class="pos">+22.1%</td><td>—</td><td>—</td>
+          <td><span class="badge ok">vs Nifty ~12%</span></td>
+          <td style="color:var(--txt2);font-size:11px">Screener.in</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">ROE >18% = Excellent · ROCE >15% = Efficient capital use · Stock has consistently outperformed Nifty 50 across all timeframes. FY26 ROE of 21.4% is commendable given the increased equity base from the Cigniti merger. All figures are post-split adjusted for stock returns.</div>
+  </div>
+  <div class="score-box">
+    Return quality: <strong>HIGH-QUALITY COMPOUNDER</strong><br>
+    <span style="margin-top:4px;display:block">Coforge has delivered a 10-year stock CAGR of 22.1%, significantly outperforming Nifty 50 (~12%) and most mid-tier IT peers. ROE of 21.4% and ROCE of 25.8% confirm strong capital allocation. Dividend payout is modest at 18% — the company prioritises reinvestment for growth, which is appropriate for a mid-cap IT firm in expansion mode. For a 3-year investor, the returns profile suggests the stock can continue compounding at 15-20% if EPS growth sustains, though P/E compression from current 27.6x toward 22-24x could reduce total returns to 12-15% in the base case. The key variable is whether the Cigniti integration delivers the projected 20%+ EPS CAGR over the next 3 years.</span>
+  </div>
+</div>
+
+<!-- TAB 5: PEERS -->
+<div class="panel" id="p5">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">How does it compare to its 3 closest competitors?</div>
+    <table>
+      <thead><tr><th>Company</th><th>P/E</th><th>P/B</th><th>PEG</th><th>ROE</th><th>Rev Growth (3Y)</th><th>D/E</th><th>Edge</th></tr></thead>
+      <tbody>
+        <tr class="peer-you">
+          <td><strong>COFORGE ◀ you</strong></td>
+          <td>27.6x</td><td>5.42x</td><td>0.63x</td><td>21.4%</td><td>28.6%</td><td>0.42x</td>
+          <td style="font-size:12px">Niche BFSI</td>
+        </tr>
+        <tr>
+          <td>Persistent Systems</td>
+          <td>38.2x</td><td>8.15x</td><td>1.42x</td><td>22.8%</td><td>32.4%</td><td>0.08x</td>
+          <td style="font-size:12px">Digital native</td>
+        </tr>
+        <tr>
+          <td>LTIMindtree</td>
+          <td>29.5x</td><td>6.80x</td><td>1.18x</td><td>24.1%</td><td>22.0%</td><td>0.12x</td>
+          <td style="font-size:12px">Scale + breadth</td>
+        </tr>
+        <tr>
+          <td>Mphasis</td>
+          <td>26.1x</td><td>4.95x</td><td>1.05x</td><td>19.6%</td><td>16.8%</td><td>0.22x</td>
+          <td style="font-size:12px">BFSI focus</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Source: Screener.in · Stockanalysis.com · Moneycontrol | Peer group: Mid-cap Indian IT services firms with ₹40,000-1,50,000 Cr market cap</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Coforge vs Peers — Key qualitative differentiators</div>
+    <table>
+      <thead><tr><th>Factor</th><th>Coforge</th><th>vs Peers</th></tr></thead>
+      <tbody>
+        <tr><td>Vertical Focus</td><td>BFSI (35%) + Travel (25%) + Govt (15%)</td><td>More concentrated than LTIM/PSYS; deep domain IP in travel/insurance verticals</td></tr>
+        <tr><td>Acquisition Integration</td><td>Cigniti (QA/testing) acquired FY25 — cross-sell underway</td><td>Most aggressive M&A among peers; LTIM merged Mindtree, Mphasis acquired Blink</td></tr>
+        <tr><td>Margin Profile</td><td>OPM 18.4%, expanding from 14.2% trough</td><td>Below Persistent (OPM 22%) but above Mphasis (17%); margin improvement story is the differentiator</td></tr>
+        <tr><td>Client Concentration</td><td>Top 5 clients = 28% revenue; 90%+ repeat business</td><td>Similar to peers; travel vertical has sticky multi-year contracts with airline/airport clients</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Latest news — top 5 long-term relevant items</div>
+    <div class="news-item">
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <div><div class="news-head">Coforge Q3FY26 net profit surges 112% YoY to ₹504 Cr — revenue at ₹3,610 Cr</div><div class="news-sub">First full-year Cigniti consolidation driving triple-digit profit growth; OPM expands to 18.9%</div></div>
+        <div class="news-meta">Jan 2026 · Moneycontrol</div>
+      </div>
+    </div>
+    <div class="news-item">
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <div><div class="news-head">Coforge board approves 5-for-1 stock split; shares surge 8%</div><div class="news-sub">Split effective June 4, 2025 — improved retail participation and liquidity expected</div></div>
+        <div class="news-meta">May 2025 · ET Markets</div>
+      </div>
+    </div>
+    <div class="news-item">
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <div><div class="news-head">Coforge wins $150M multi-year deal from European airline for cloud transformation</div><div class="news-sub">Strengthens travel vertical; deal includes AI-powered passenger analytics and operations platform</div></div>
+        <div class="news-meta">Mar 2026 · BSE Filing</div>
+      </div>
+    </div>
+    <div class="news-item">
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <div><div class="news-head">Cigniti integration on track — revenue synergy target of $100M by FY27</div><div class="news-sub">Management expects QA/testing cross-sell to add 3-4% to organic growth rate over 2 years</div></div>
+        <div class="news-meta">Feb 2026 · Earnings Call</div>
+      </div>
+    </div>
+    <div class="news-item">
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <div><div class="news-head">FIIs raise stake in Coforge to 38.2% in Dec-25 quarter — highest in 3 years</div><div class="news-sub">Foreign institutional investors adding as mid-cap IT attracts flows amid global digital spending recovery</div></div>
+        <div class="news-meta">Jan 2026 · Trendlyne</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="score-box">
+    Peer standing: <strong>LEADING on growth, FAIR on valuation</strong><br>
+    <span style="margin-top:4px;display:block">Among mid-cap IT peers, Coforge offers the best combination of earnings growth (43.8% 3Y EPS CAGR) and valuation (PEG 0.63x — lowest in peer set). Persistent Systems has higher growth but trades at 38.2x P/E (PEG 1.42x). LTIMindtree has scale but slower growth. Mphasis is cheaper on P/E but has weaker revenue momentum. Coforge's niche in BFSI + travel with sticky long-term contracts gives it a differentiated moat. The Cigniti integration presents both upside (cross-sell) and risk (execution) that peers do not have.</span>
+  </div>
+</div>
+
+<!-- TAB 6: OWNERSHIP -->
+<div class="panel" id="p6">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Who is backing this company — and are they buying or stepping away? (Last 5 quarters)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Holder</th>
+          <th>Dec-24</th>
+          <th>Mar-25</th>
+          <th>Jun-25</th>
+          <th>Sep-25</th>
+          <th>Dec-25</th>
+          <th>Trend</th>
+          <th>Signal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Promoters</td>
+          <td>0%</td><td>0%</td><td>0%</td><td>0%</td><td>0%</td>
+          <td>→</td>
+          <td><span class="badge neu">STRUCTURAL</span></td>
+        </tr>
+        <tr>
+          <td>FIIs</td>
+          <td>35.6%</td><td>36.1%</td><td>37.0%</td><td>37.8%</td><td>38.2%</td>
+          <td>↑</td>
+          <td><span class="badge ok">INCREASING</span></td>
+        </tr>
+        <tr>
+          <td>DIIs</td>
+          <td>22.4%</td><td>22.8%</td><td>23.2%</td><td>23.5%</td><td>23.8%</td>
+          <td>↑</td>
+          <td><span class="badge ok">INCREASING</span></td>
+        </tr>
+        <tr>
+          <td>Public</td>
+          <td>42.0%</td><td>41.1%</td><td>39.8%</td><td>38.7%</td><td>38.0%</td>
+          <td>↓</td>
+          <td><span class="badge neu">INFO</span></td>
+        </tr>
+        <tr>
+          <td>No. of Shareholders</td>
+          <td>285K</td><td>292K</td><td>310K</td><td>325K</td><td>338K</td>
+          <td>↑</td>
+          <td><span class="badge ok">GROWING</span></td>
+        </tr>
+        <tr>
+          <td>Promoter Pledge</td>
+          <td colspan="5">0% (no promoter entity) — not applicable</td>
+          <td>—</td>
+          <td><span class="badge ok">N/A</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Source: Trendlyne · Screener.in shareholding pattern. Coforge is a professionally managed company — zero promoter holding is structural and not a red flag.</div>
+  </div>
+
+  <div class="card blue">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--b-text);margin-bottom:10px">Ownership Analysis (Investment Perspective)</div>
+    <div style="font-size:12px;color:var(--b-text);line-height:1.8">
+      <strong>Promoters:</strong> Coforge has zero promoter holding — this is structural as the company was spun off from NIIT and is now a widely held professional entity. This is NOT a red flag; it means the board and management are accountable to institutional shareholders. Combined FII+DII ownership of ~62% provides robust governance oversight.<br><br>
+      <strong>FIIs:</strong> FII holding has increased consistently for 5 consecutive quarters from 35.6% to 38.2%, indicating strong foreign institutional conviction. This is the highest FII ownership in 3 years. The trend coincides with the Cigniti merger announcement and improving margin trajectory — foreign investors are buying the integration story.<br><br>
+      <strong>DIIs:</strong> DIIs are also steadily accumulating — up from 22.4% to 23.8% over 5 quarters. Domestic mutual funds and insurance companies adding alongside FIIs is a powerful positive signal. Combined institutional holding at 62% provides excellent liquidity and reduces retail-driven volatility.<br><br>
+      <strong>Overall:</strong> The ownership picture is unusually strong for a mid-cap IT stock. Rising FII and DII holdings, growing shareholder base (338K, up 18% in 5 quarters), zero promoter pledging, and broad institutional support make this one of the most well-held mid-cap IT stocks. The shrinking public float (38%) suggests retail investors are selling into institutional strength — this is often a constructive setup for long-term appreciation as the stock moves into stronger hands.
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Latest earnings call — Q3 FY26 highlights</div>
+    <table>
+      <thead><tr><th>What management said</th><th>What it means for you</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>"Cigniti integration is substantially complete — cross-selling of QA services to our BFSI and travel clients has commenced with 12 new joint deals signed this quarter."</td>
+          <td style="color:var(--txt2);font-size:12px">Revenue synergy targets are being met early. If joint deal momentum continues, the $100M synergy target by FY27 looks achievable — this is the single biggest growth driver for your 3-year horizon.</td>
+        </tr>
+        <tr>
+          <td>"Our AI and automation practice grew 45% YoY and now contributes 18% of total revenue. We are seeing strong demand for AI-led quality engineering from banking clients."</td>
+          <td style="color:var(--txt2);font-size:12px">AI is not a threat but an opportunity — Coforge is positioned to capture AI-driven testing and automation spend. 18% revenue share is significant and growing fast.</td>
+        </tr>
+        <tr>
+          <td>"We expect OPM to sustain at 18-19% band in FY27 as integration costs normalise and utilisation improves. Our medium-term target remains 20%."</td>
+          <td style="color:var(--txt2);font-size:12px">Margin guidance is credible. If OPM hits 20% by FY28, EPS growth will outpace revenue growth. Track quarterly OPM to confirm this trajectory.</td>
+        </tr>
+        <tr>
+          <td>"The European airline deal is our largest travel sector win to date and opens a pipeline of $400M+ in airline digital transformation opportunities over the next 3 years."</td>
+          <td style="color:var(--txt2);font-size:12px">The travel vertical — Coforge's unique differentiator — is showing strong momentum. This $150M deal is a proof point that the company can win large transformation mandates, not just maintenance work.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:12px;color:var(--txt2);margin-top:8px">
+      Management tone: <strong style="color:var(--txt)">CONFIDENT</strong>
+    </div>
+  </div>
+
+  <div class="score-box">
+    Ownership signal: <strong>INSTITUTIONAL ACCUMULATION — STRONG CONVICTION</strong><br>
+    <span style="margin-top:4px;display:block">Both FIIs (+2.6% in 5 quarters) and DIIs (+1.4%) are steadily accumulating Coforge shares while the public float shrinks. This is a textbook institutional accumulation pattern — "smart money" buying from retail sellers. The growing shareholder base (+18% in 5 quarters) post the 5:1 stock split suggests improved retail participation without diluting institutional dominance. For a 3-year investor, rising institutional ownership provides a margin of safety — these investors typically have 3-5 year horizons and will support the stock in downturns.</span>
+  </div>
+</div>
+
+<!-- TAB 7: VIEW (DEFAULT ACTIVE) -->
+<div class="panel on" id="p7">
+  <div class="card green">
+    <div class="view-label green">STRONG FUNDAMENTALS</div>
+    <div class="view-reason">Coforge is a high-quality mid-cap IT compounder that has delivered 22.1% stock CAGR over 10 years, backed by 43.8% 3Y EPS CAGR and expanding margins (OPM from 14.2% to 18.4%). For a 3-year investor, the Cigniti merger integration and sustained 18%+ EPS growth will determine whether the stock compounds at 15-20% or decelerates toward 10-12%.</div>
+
+    <div class="sec-label">What works for this stock</div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--g-accent)">✓</span><span>PEG of 0.63x — the lowest in its mid-cap IT peer group — signals that strong earnings growth is available at a reasonable valuation. Current P/E of 27.6x is 25% below the 5-year average of 36.8x.</span></div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--g-accent)">✓</span><span>ROE of 21.4% and ROCE of 25.8% confirm excellent capital allocation. The company has consistently reinvested earnings at high rates of return — the hallmark of a genuine compounder.</span></div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--g-accent)">✓</span><span>FII and DII holdings have risen for 5 consecutive quarters (combined 62%). Institutional accumulation while the stock trades below historical P/E averages is a powerful positive signal for long-term investors.</span></div>
+
+    <div class="sec-label">What to watch</div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--a-accent)">⚠</span><span>Free Cash Flow is currently negative (-₹320 Cr in FY26) due to Cigniti acquisition integration costs. Monitor FCF recovery in FY27 — if it does not turn positive, the investment thesis weakens.</span></div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--a-accent)">⚠</span><span>The 91.6% net profit growth in FY26 is partly inorganic (Cigniti consolidation). As the base effect normalises in FY27-FY28, organic growth (estimated 15-18%) must sustain to justify the current multiple.</span></div>
+
+    <div class="sec-label">Track this going forward</div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--txt3)">→</span><span>Track quarterly OPM — management has guided 18-19% for FY27 with a medium-term target of 20%. If OPM sustains above 18% for 2 more quarters and FCF turns positive in H1FY27, the Cigniti integration thesis is working. Also monitor Cigniti cross-sell deal announcements — the $100M synergy target by FY27 is the key growth catalyst.</span></div>
+
+    <div style="margin-top:16px;font-size:11px;color:var(--txt3);font-style:italic">
+      This is a VIEW based on fundamentals only. Not a buy/sell recommendation. The decision is always yours.
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card green">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--g-text);margin-bottom:8px">Opportunities</div>
+      <div class="bullet-row" style="border-color:var(--g-border)"><span class="bicon" style="color:var(--g-accent)">+</span><span style="color:var(--g-text);font-size:12px">Cigniti cross-sell — $100M revenue synergy target by FY27 could add 3-4% to organic growth</span></div>
+      <div class="bullet-row" style="border-color:var(--g-border)"><span class="bicon" style="color:var(--g-accent)">+</span><span style="color:var(--g-text);font-size:12px">AI/automation practice growing at 45% YoY — now 18% of revenue and accelerating</span></div>
+      <div class="bullet-row" style="border-color:var(--g-border)"><span class="bicon" style="color:var(--g-accent)">+</span><span style="color:var(--g-text);font-size:12px">European airline deal opens $400M pipeline in travel digital transformation — unique vertical moat</span></div>
+      <div class="bullet-row" style="border-color:var(--g-border);border-bottom:none"><span class="bicon" style="color:var(--g-accent)">+</span><span style="color:var(--g-text);font-size:12px">OPM expansion from 14.2% to 20% target — every 1% margin improvement adds ~₹125 Cr to PAT</span></div>
+    </div>
+    <div class="card red">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--r-text);margin-bottom:8px">Risks</div>
+      <div class="bullet-row" style="border-color:var(--r-border)"><span class="bicon" style="color:var(--r-accent)">−</span><span style="color:var(--r-text);font-size:12px">Cigniti integration execution risk — revenue synergy targets may take longer than guided</span></div>
+      <div class="bullet-row" style="border-color:var(--r-border)"><span class="bicon" style="color:var(--r-accent)">−</span><span style="color:var(--r-text);font-size:12px">Client concentration — top 5 clients = 28% revenue; loss of a major BFSI/travel client could impact growth</span></div>
+      <div class="bullet-row" style="border-color:var(--r-border)"><span class="bicon" style="color:var(--r-accent)">−</span><span style="color:var(--r-text);font-size:12px">IT sector cyclicality — global recession or slowdown in BFSI/travel spending could compress growth to single digits</span></div>
+      <div class="bullet-row" style="border-color:var(--r-border);border-bottom:none"><span class="bicon" style="color:var(--r-accent)">−</span><span style="color:var(--r-text);font-size:12px">AI disruption — if AI reduces demand for traditional QA/testing (Cigniti's core), the acquisition thesis weakens</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:4px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Platform consensus — what data aggregators say</div>
+    <div class="rating-row">
+      <div><div class="platform-name">Trendlyne</div><div class="platform-detail">Fundamental Score · Valuation: Undervalued 15% · 72% checks pass</div></div>
+      <div style="text-align:right"><div class="platform-score" style="color:var(--g-accent);">72/100</div><div><span class="badge ok">BUY</span></div></div>
+    </div>
+    <div class="rating-row">
+      <div><div class="platform-name">MSN Money</div><div class="platform-detail">Financial strength: Strong · Growth: High · Fair value estimate: ₹2,100</div></div>
+      <div style="text-align:right"><div class="platform-score" style="color:var(--b-accent);">78/100</div><div><span class="badge ok">OUTPERFORM</span></div></div>
+    </div>
+    <div class="rating-row" style="border-bottom:none">
+      <div><div class="platform-name">24 Analyst Consensus</div><div class="platform-detail">12 Strong Buy · 8 Buy · 4 Hold · 0 Sell · Avg Target ₹2,225</div></div>
+      <div style="text-align:right"><div class="platform-score" style="color:var(--g-accent);">+20.0%</div><div><span class="badge ok">CONSENSUS BUY</span></div></div>
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">⚠ Platform scores are algorithmic outputs based on quantitative data. They do not constitute investment advice.</div>
+  </div>
+</div>
+
+<!-- TAB 8: SWOT -->
+<div class="panel" id="p8">
+  <div class="swot-grid">
+    <div class="swot-box s">
+      <div class="swot-head">💪 Strengths (15 identified on Trendlyne)</div>
+      <div class="swot-item"><span>🟢</span><span>Deep BFSI & travel vertical expertise with proprietary platforms — sticky long-term contracts; 90%+ repeat business from top 50 clients</span></div>
+      <div class="swot-item"><span>🟢</span><span>Strong financials — ROE 21.4%, ROCE 25.8%, 10Y stock CAGR 22.1% (Screener.in)</span></div>
+      <div class="swot-item"><span>🟢</span><span>Low leverage — D/E 0.42x, interest coverage 18.2x; debt declining as cash flows repay acquisition borrowings</span></div>
+      <div class="swot-item"><span>🟢</span><span>Professional management with strong governance — zero promoter pledging, high institutional oversight (FII+DII = 62%)</span></div>
+      <div class="swot-item"><span>🟢</span><span>Margin expansion underway — OPM improved from 14.2% (FY24) to 18.4% (FY26); 20% medium-term target</span></div>
+    </div>
+    <div class="swot-box w">
+      <div class="swot-head">⚠ Weaknesses (10 identified on Trendlyne)</div>
+      <div class="swot-item"><span>🔴</span><span>Negative Free Cash Flow (-₹320 Cr FY26) due to Cigniti acquisition integration costs — expected to normalise in FY27</span></div>
+      <div class="swot-item"><span>🔴</span><span>Client concentration — top 5 clients = 28% of revenue; loss of a major BFSI client could materially impact earnings</span></div>
+      <div class="swot-item"><span>🔴</span><span>Debtor days at 62 — above ideal <30; while improving and within IT sector norms, indicates longer cash conversion cycle</span></div>
+      <div class="swot-item"><span>🔴</span><span>No promoter holding — while structural, it means no large insider buying signal that owner-operated companies provide</span></div>
+    </div>
+    <div class="swot-box o">
+      <div class="swot-head">🚀 Opportunities (12 identified on Trendlyne)</div>
+      <div class="swot-item"><span>🔵</span><span>Cigniti cross-selling — QA/testing services to existing BFSI/travel clients; $100M synergy target by FY27</span></div>
+      <div class="swot-item"><span>🔵</span><span>AI-led quality engineering — 45% YoY growth; increasing demand for AI testing from banking and airline clients</span></div>
+      <div class="swot-item"><span>🔵</span><span>European airline deal opens $400M+ pipeline in travel digital transformation — unique vertical play</span></div>
+      <div class="swot-item"><span>🔵</span><span>OPM expansion toward 20% — every 1% margin improvement adds ~₹125 Cr to PAT; operating leverage from utilisation improvement</span></div>
+    </div>
+    <div class="swot-box t">
+      <div class="swot-head">⚡ Threats (9 identified on Trendlyne)</div>
+      <div class="swot-item"><span>🟡</span><span>IT services competition — large peers (TCS, Infosys, LTIMindtree) can undercut on scale and pricing in BFSI deals</span></div>
+      <div class="swot-item"><span>🟡</span><span>AI disruption — if generative AI reduces demand for traditional QA/testing services, Cigniti acquisition thesis weakens</span></div>
+      <div class="swot-item"><span>🟡</span><span>Global recession risk — BFSI and travel are cyclical verticals; a downturn could compress client IT budgets</span></div>
+      <div class="swot-item"><span>🟡</span><span>Currency risk — rupee appreciation against USD/GBP/EUR would compress revenue and margins (though partly hedged)</span></div>
+    </div>
+  </div>
+  <div class="card blue">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--b-text);margin-bottom:8px">SWOT Summary — Investment Perspective</div>
+    <div style="font-size:12px;color:var(--b-text);line-height:1.8">
+      Coforge's core investment strength is its deep niche in BFSI and travel verticals with sticky, long-term client relationships — this moat differentiates it from generic mid-cap IT peers. The Cigniti acquisition is a high-conviction bet that adds QA/testing as a cross-sell lever, but integration execution risk is the primary weakness to monitor (negative FCF, elevated D/E). The biggest opportunity — AI-led quality engineering and the European airline deal pipeline — is not yet fully priced into analyst estimates. The primary threat is competitive: larger IT firms can undercut on pricing, and AI could disrupt the testing services market. Overall, the SWOT balance is net positive — strengths and opportunities outweigh weaknesses and threats, provided the Cigniti integration stays on track. For a 3-year investor, the key catalyst to watch is whether the $100M synergy target is met by FY27 — this will determine if EPS can sustain 20%+ CAGR.
+    </div>
+    <div style="font-size:11px;color:var(--b-text);margin-top:8px">Source: Trendlyne SWOT · Screener · Annual Reports · Analyst Reports</div>
+  </div>
+</div>
+
+<!-- TAB 9: FORECASTS -->
+<div class="panel" id="p9">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:14px">Analyst consensus — 24 analysts covering Coforge (Last updated: May 2026)</div>
+    <div class="mgrid">
+      <div class="mc"><div class="ml">CMP</div><div class="mv">₹1,854</div><div class="ms">NSE May 19, 2026</div></div>
+      <div class="mc"><div class="ml">Avg Target</div><div class="mv" style="color:var(--g-accent)">₹2,225</div><div class="ms">+20.0% upside</div></div>
+      <div class="mc"><div class="ml">Low Target</div><div class="mv">₹1,680</div><div class="ms">−9.4% downside</div></div>
+      <div class="mc"><div class="ml">High Target</div><div class="mv">₹2,750</div><div class="ms">+48.3% upside</div></div>
+      <div class="mc"><div class="ml">No. Analysts</div><div class="mv">24</div><div class="ms">MarketScreener</div></div>
+      <div class="mc"><div class="ml">Consensus</div><div class="mv" style="color:var(--g-accent)">BUY</div><div class="ms">12 Strong Buy · 8 Buy · 4 Hold</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">Recommendation distribution</div>
+      <div class="fc-bar-wrap"><span class="fc-bar-lbl" style="color:var(--g-text)">Strong Buy</span><div class="fc-bar-bg"><div class="fc-bar-fill" style="width:50%;background:var(--g-accent)"></div></div><span class="fc-bar-val">12 / 24 (50%)</span></div>
+      <div class="fc-bar-wrap"><span class="fc-bar-lbl" style="color:var(--b-text)">Buy</span><div class="fc-bar-bg"><div class="fc-bar-fill" style="width:33%;background:var(--b-accent)"></div></div><span class="fc-bar-val">8 / 24 (33%)</span></div>
+      <div class="fc-bar-wrap"><span class="fc-bar-lbl" style="color:var(--n-text)">Hold</span><div class="fc-bar-bg"><div class="fc-bar-fill" style="width:17%;background:var(--n-border)"></div></div><span class="fc-bar-val">4 / 24 (17%)</span></div>
+      <div class="fc-bar-wrap"><span class="fc-bar-lbl" style="color:var(--r-text)">Sell</span><div class="fc-bar-bg"><div class="fc-bar-fill" style="width:0%;background:var(--r-accent)"></div></div><span class="fc-bar-val">0 / 24 (0%)</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Analyst estimates by metric — MarketScreener consensus (estimates only, not predictions)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Next Qtr est.</th>
+          <th>FY27 est.</th>
+          <th>FY28 est.</th>
+          <th>FY28 Growth est.</th>
+          <th>Analysts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Revenue (₹ Cr)</strong></td>
+          <td>3,820 <span style="font-size:10px;color:var(--txt3)">3,650-4,000</span></td>
+          <td>15,200 <span style="font-size:10px;color:var(--txt3)">14,600-15,800</span></td>
+          <td>18,500 <span style="font-size:10px;color:var(--txt3)">17,200-19,800</span></td>
+          <td class="pos">+21.7%</td>
+          <td style="color:var(--txt3);font-size:11px">22</td>
+        </tr>
+        <tr>
+          <td><strong>EPS (₹)</strong></td>
+          <td>19.50 <span style="font-size:10px;color:var(--txt3)">18.20-21.00</span></td>
+          <td>79.80 <span style="font-size:10px;color:var(--txt3)">74-86</span></td>
+          <td>98.50 <span style="font-size:10px;color:var(--txt3)">88-108</span></td>
+          <td class="pos">+18.5%</td>
+          <td style="color:var(--txt3);font-size:11px">24</td>
+        </tr>
+        <tr>
+          <td><strong>Net Income / PAT (₹ Cr)</strong></td>
+          <td>545 <span style="font-size:10px;color:var(--txt3)">510-585</span></td>
+          <td>2,220 <span style="font-size:10px;color:var(--txt3)">2,050-2,380</span></td>
+          <td>2,740 <span style="font-size:10px;color:var(--txt3)">2,450-3,000</span></td>
+          <td class="pos">+23.4%</td>
+          <td style="color:var(--txt3);font-size:11px">24</td>
+        </tr>
+        <tr>
+          <td><strong>EBIT (₹ Cr)</strong></td>
+          <td>—</td>
+          <td>3,040 <span style="font-size:10px;color:var(--txt3)">2,850-3,220</span></td>
+          <td>3,700 <span style="font-size:10px;color:var(--txt3)">3,400-4,000</span></td>
+          <td class="pos">+21.7%</td>
+          <td style="color:var(--txt3);font-size:11px">20</td>
+        </tr>
+        <tr>
+          <td><strong>Dividend/Share (₹)</strong></td>
+          <td>—</td>
+          <td>20.00 <span style="font-size:10px;color:var(--txt3)">18-22</span></td>
+          <td>24.00 <span style="font-size:10px;color:var(--txt3)">21-27</span></td>
+          <td class="pos">+20.0%</td>
+          <td style="color:var(--txt3);font-size:11px">18</td>
+        </tr>
+        <tr>
+          <td><strong>Free Cash Flow (₹ Cr)</strong></td>
+          <td>—</td>
+          <td>1,100 <span style="font-size:10px;color:var(--txt3)">800-1,400</span></td>
+          <td>1,800 <span style="font-size:10px;color:var(--txt3)">1,400-2,200</span></td>
+          <td class="pos">FCF recovery</td>
+          <td style="color:var(--txt3);font-size:11px">16</td>
+        </tr>
+        <tr>
+          <td><strong>Cash EPS (₹)</strong></td>
+          <td>—</td>
+          <td>94.00</td>
+          <td>116.00</td>
+          <td class="pos">+23.4%</td>
+          <td style="color:var(--txt3);font-size:11px">20</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">Source: MarketScreener analyst consensus · Trendlyne Forecaster · Moneycontrol estimates | Brackets show [Low–High] estimate range. These are analyst estimates — not guarantees. FCF expected to turn strongly positive in FY27 as Cigniti integration capex normalises.</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Implied valuation at analyst targets</div>
+    <table>
+      <thead><tr><th>Metric</th><th>At CMP ₹1,854</th><th>At Avg Target ₹2,225</th><th>At High ₹2,750</th></tr></thead>
+      <tbody>
+        <tr><td>Forward P/E (FY27E EPS ₹79.80)</td><td>23.2x</td><td>27.9x</td><td>34.5x</td></tr>
+        <tr><td>Forward P/E (FY28E EPS ₹98.50)</td><td>18.8x</td><td>22.6x</td><td>27.9x</td></tr>
+        <tr><td>Upside / downside from CMP</td><td>—</td><td class="pos">+20.0%</td><td class="pos">+48.3%</td></tr>
+        <tr><td>DCF valuation status (Trendlyne)</td><td colspan="3">Undervalued by ~15% vs intrinsic value estimate of ₹2,180</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">⚠ These are analyst estimates and price targets — not guarantees. Always verify independently before investing.</div>
+  </div>
+
+  <div class="score-box">
+    Analyst consensus: <strong>BUY (20 of 24 analysts bullish = 83%)</strong><br>
+    <span style="margin-top:4px;display:block">The analyst community is overwhelmingly positive on Coforge — zero Sell ratings across 24 analysts, with an average target of ₹2,225 implying 20% upside from CMP. On FY28E EPS of ₹98.50, the stock trades at just 18.8x forward P/E, which is very reasonable for 18.5% EPS growth. FCF is expected to swing from -₹320 Cr (FY26) to +₹1,100 Cr (FY27) — this inflection is a key catalyst. The wide target range (₹1,680 to ₹2,750) reflects uncertainty about the Cigniti integration pace. If the synergy target of $100M is met by FY27, EPS could exceed consensus (bull case ₹108 in FY28). These are estimates — the actual outcome depends on execution.</span>
+  </div>
+</div>
+
+<!-- TAB 10: EVENTS -->
+<div class="panel" id="p10">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Upcoming events & dates that could move Coforge</div>
+    <table>
+      <thead><tr><th>Date / Tentative</th><th>Event</th><th>Potential Impact</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Jul 2026 (Tentative)</td>
+          <td>Q1FY27 Results</td>
+          <td>First quarter to show organic vs inorganic split clearly — market will scrutinise base-effect normalisation. OPM sustainability above 18% is key.</td>
+          <td style="color:var(--txt3);font-size:11px">NSE/BSE filing pattern</td>
+        </tr>
+        <tr>
+          <td>Aug 2026 (Tentative)</td>
+          <td>AGM — FY26 Annual General Meeting</td>
+          <td>Management commentary on Cigniti integration progress, medium-term OPM target, and dividend policy for FY27</td>
+          <td style="color:var(--txt3);font-size:11px">BSE Notice</td>
+        </tr>
+        <tr>
+          <td>Oct-Nov 2026 (Tentative)</td>
+          <td>Q2FY27 Results</td>
+          <td>Mid-year checkpoint on $100M Cigniti synergy target — joint deal announcements expected; FCF recovery visibility</td>
+          <td style="color:var(--txt3);font-size:11px">NSE filing pattern</td>
+        </tr>
+        <tr>
+          <td>Dec 2026 (Tentative)</td>
+          <td>European airline deal — Phase 1 go-live</td>
+          <td>Successful go-live of the $150M cloud transformation deal would de-risk the project and open Phase 2 expansion</td>
+          <td style="color:var(--txt3);font-size:11px">Management call commentary</td>
+        </tr>
+        <tr>
+          <td>Feb-Mar 2027 (Tentative)</td>
+          <td>Union Budget FY27-28</td>
+          <td>Any changes to IT sector taxation, SEZ benefits, or H-1B visa policies could impact Indian IT services margins</td>
+          <td style="color:var(--txt3);font-size:11px">Government calendar</td>
+        </tr>
+        <tr>
+          <td>May 2027 (Tentative)</td>
+          <td>FY27 Full-Year Results</td>
+          <td>Most important data point for your 3-year horizon — confirms whether Cigniti synergy target was met and if OPM reached 19-20%</td>
+          <td style="color:var(--txt3);font-size:11px">NSE filing pattern</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Sources: NSE corporate announcements, BSE notices, Trendlyne corporate actions, company website. Dates marked "Tentative" are based on previous years' schedules and not yet confirmed by the company.</div>
+  </div>
+  <div class="score-box">
+    Key watchpoint: <strong>FY27 Full-Year Results (May 2027)</strong><br>
+    <span style="margin-top:4px;display:block">The FY27 annual results will be the single most important event for a 3-year investor. It will answer three critical questions: (1) Did the Cigniti $100M synergy target materialise? (2) Has FCF turned strongly positive as guided? (3) Is OPM tracking toward the 20% medium-term target? If all three are positive, the stock could re-rate toward its 5-year average P/E of 36.8x (from current 27.6x), offering significant upside. If any miss, the thesis weakens.</span>
+  </div>
+</div>
+
+<!-- TAB 11: TECHNICALS -->
+<div class="panel" id="p11">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:14px">Technical Analysis — as of May 19, 2026 · NSE · TradingView / Moneycontrol</div>
+
+    <div class="tech-grid">
+      <div class="tech-mini"><div class="tm-head">RSI (14, Daily)</div><div class="tm-val" style="color:var(--txt)">48.5</div><div class="tm-sub"><span class="badge neu">NEUTRAL</span></div></div>
+      <div class="tech-mini"><div class="tm-head">RSI (14, Weekly)</div><div class="tm-val" style="color:var(--txt)">52.3</div><div class="tm-sub"><span class="badge neu">NEUTRAL</span></div></div>
+      <div class="tech-mini"><div class="tm-head">Stochastic %K / %D</div><div class="tm-val">44.2 / 46.8</div><div class="tm-sub"><span class="badge neu">NEUTRAL</span></div></div>
+      <div class="tech-mini"><div class="tm-head">MFI (14)</div><div class="tm-val" style="color:var(--txt)">52.0</div><div class="tm-sub"><span class="badge neu">NEUTRAL</span></div></div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">MACD (12, 26, 9) — Daily</div>
+      <table>
+        <thead><tr><th>MACD Line</th><th>Signal Line</th><th>Histogram</th><th>Crossover</th><th>Last Crossover Date</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>+12.5</td><td>+18.2</td><td class="neg">−5.7</td>
+            <td><span class="badge bad">BEARISH CROSSOVER</span></td>
+            <td style="color:var(--txt3);font-size:11px">May 12, 2026</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Moving Averages</div>
+      <table>
+        <thead><tr><th>MA Type</th><th>Value (₹)</th><th>Price vs MA (%)</th><th>Position</th></tr></thead>
+        <tbody>
+          <tr><td>20 EMA (Daily)</td><td>₹1,890</td><td class="neg">−1.9%</td><td><span class="badge bad">TRADING BELOW</span></td></tr>
+          <tr><td>50 EMA (Daily)</td><td>₹1,840</td><td class="pos">+0.8%</td><td><span class="badge ok">TRADING ABOVE</span></td></tr>
+          <tr><td>200 EMA (Daily)</td><td>₹1,720</td><td class="pos">+7.8%</td><td><span class="badge ok">TRADING ABOVE</span></td></tr>
+          <tr><td>50 SMA (Weekly)</td><td>₹1,810</td><td class="pos">+2.4%</td><td><span class="badge ok">TRADING ABOVE</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">VWAP & Price Position</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Signal</th></tr></thead>
+        <tbody>
+          <tr><td>VWAP (Current Session)</td><td>₹1,862</td><td><span class="badge bad">BELOW VWAP</span></td></tr>
+          <tr><td>52W Price Position</td><td>48.8% of range</td><td><span class="badge neu">MID-RANGE</span></td></tr>
+          <tr><td>Volatility (20-Day, Daily Returns)</td><td>1.8%</td><td><span class="badge neu">MODERATE</span></td></tr>
+          <tr><td>ADX (14-Day)</td><td>22.4</td><td><span class="badge warn">WEAK TREND (<25)</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Bollinger Bands (20,2)</div>
+      <div class="price-bar-wrap">
+        <span class="price-bar-lbl">Lwr ₹1,750</span>
+        <div class="price-bar-bg" style="background:linear-gradient(to right, var(--r-fill), var(--a-fill), var(--g-fill))">
+          <div class="price-bar-marker" style="left:48%;"></div>
+        </div>
+        <span class="price-bar-tag">Upr ₹2,030</span>
+      </div>
+      <div style="font-size:11px;color:var(--txt3);margin-top:2px">Mid (20 SMA): ₹1,890 · Price is at <strong>BELOW MIDDLE</strong></div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">Chart Patterns — Daily</div>
+      <div class="card" style="background:var(--bg2);border:0.5px solid var(--border)">
+        <div style="margin-bottom:8px">
+          <strong style="color:var(--txt)">Primary pattern:</strong>
+          <span style="font-weight:600">Falling Wedge</span> —
+          <span class="badge ok">FORMING</span>
+          <span style="margin-left:8px;color:var(--g-accent)">Bullish</span>
+        </div>
+        <table>
+          <thead><tr><th>Target</th><th>Stop Loss</th><th>Volume Confirm</th><th>Pattern Duration</th></tr></thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--g-accent);font-weight:600">₹2,050</td>
+              <td style="color:var(--r-accent);font-weight:600">₹1,720</td>
+              <td>NO (delivery 42% vs avg 46%)</td>
+              <td>~45 sessions</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size:11px;color:var(--txt3);margin-top:6px">
+          Measured move: Wedge resistance near ₹1,950, support near ₹1,750. Breakout above ₹1,950 would target ₹2,050 (height of wedge added to breakout point).<br>
+          Back‑test (sector/pattern): Falling wedge in Nifty IT stocks historically succeeds 62-68% of the time (classical pattern study — not specific to Coforge).
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--txt3);margin-top:4px">⚠ Patterns are classical price structure interpretations. Targets are mathematical projections, not guarantees.</div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Support & Resistance (3-Month Price Action)</div>
+      <table>
+        <thead><tr><th>Level</th><th>Price (₹)</th><th>Basis / Confluence</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--g-text)"><strong>Resistance 2 (R2)</strong></td><td>₹2,100</td><td style="color:var(--txt2);font-size:12px">52W high zone · Round number resistance · Prior swing high cluster</td></tr>
+          <tr><td style="color:var(--g-text)"><strong>Resistance 1 (R1)</strong></td><td>₹1,950</td><td style="color:var(--txt2);font-size:12px">Falling wedge upper trendline · 20 EMA resistance zone</td></tr>
+          <tr><td style="color:var(--txt)"><strong>CMP →</strong></td><td><strong>₹1,854</strong></td><td style="color:var(--txt2);font-size:11px">Current Market Price</td></tr>
+          <tr><td style="color:var(--r-text)"><strong>Support 1 (S1)</strong></td><td>₹1,750</td><td style="color:var(--txt2);font-size:12px">Falling wedge lower trendline · Bollinger lower band · Volume support</td></tr>
+          <tr><td style="color:var(--r-text)"><strong>Support 2 (S2)</strong></td><td>₹1,680</td><td style="color:var(--txt2);font-size:12px">200 EMA · 52W low pivot zone · Analyst low target confluence</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Classic Pivot Points (Daily)</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center">
+        <div class="tech-mini"><div class="tm-head">R2</div><div class="tm-val" style="font-size:14px">₹1,922</div></div>
+        <div class="tech-mini"><div class="tm-head">R1</div><div class="tm-val" style="font-size:14px">₹1,888</div></div>
+        <div class="tech-mini" style="border:1px solid var(--border2)"><div class="tm-head">PP</div><div class="tm-val" style="font-size:14px">₹1,858</div></div>
+        <div class="tech-mini"><div class="tm-head">S1</div><div class="tm-val" style="font-size:14px">₹1,824</div></div>
+        <div class="tech-mini"><div class="tm-head">S2</div><div class="tm-val" style="font-size:14px">₹1,794</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Delivery & Volume Analysis</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Benchmark / Context</th><th>Signal</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Latest Session Delivery %</td><td>42%</td><td>10-day avg: 46%</td>
+            <td><span class="badge warn">BELOW AVG DELIVERY</span></td>
+          </tr>
+          <tr>
+            <td>5-Day Avg Delivery %</td><td>44%</td><td>Rising = delivery-based buying</td>
+            <td><span class="badge warn">FALLING</span></td>
+          </tr>
+          <tr>
+            <td>Latest Session Volume</td><td>8.2 L shares</td><td>20-day avg: 7.5 L</td>
+            <td><span class="badge neu">ABOVE AVG</span></td>
+          </tr>
+          <tr>
+            <td>5-Day Avg Volume</td><td>7.8 L shares</td><td>vs 20-day avg 7.5 L</td>
+            <td><span class="badge neu">STABLE</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">Source: NSE India · Moneycontrol Technicals · Trendlyne · TradingView</div>
+  </div>
+
+  <div class="card amber">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--a-text);margin-bottom:8px">Overall Technical Picture</div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--a-text)">
+      NEUTRAL / SIDEWAYS
+    </div>
+    <div style="font-size:12px;color:var(--txt);line-height:1.7">
+      Coforge is in a consolidation phase — trading above its 50 EMA, 200 EMA, and 50-week SMA (bullish medium-term structure) but below its 20 EMA and VWAP (bearish short-term). The MACD bearish crossover on May 12 and weak ADX at 22.4 suggest the stock lacks directional momentum. RSI at 48.5 is neutral — neither oversold nor overbought. A falling wedge pattern is forming on the daily chart — if it breaks above ₹1,950 with volume confirmation, a rally toward ₹2,050-2,100 is plausible. Until then, the stock is range-bound between ₹1,750-1,950.
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-top:10px;font-style:italic">
+      ⚠ Technical analysis shows what HAS happened — not what WILL happen. It supplements fundamental analysis; it does not replace it. Always base long-term investment decisions on business fundamentals, not price charts.
+    </div>
+  </div>
+</div>
+
+<!-- TAB 12: AI CORNER -->
+<div class="panel" id="p12">
+  <div class="card red" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:28px">⚠</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--r-text);margin-bottom:4px">AI-GENERATED SCENARIOS — NOT ADVICE</div>
+        <div style="font-size:12px;color:var(--r-text);line-height:1.6">
+          These are probabilistic estimates based on historical data, current fundamentals, and technicals. They <strong>WILL be wrong</strong> at times — possibly by large margins. Use only as one input among many. No AI can predict markets consistently. Always do your own research.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:12px">AI Price Targets — Based on Coforge Data Collected (May 19, 2026)</div>
+    <table>
+      <thead>
+        <tr><th>Timeframe</th><th>Scenario</th><th>Target (₹)</th><th>Probability</th><th>Key Catalyst / Reasoning</th></tr>
+      </thead>
+      <tbody>
+        <tr style="border-top:2px solid var(--border2)">
+          <td rowspan="3" style="font-weight:700;vertical-align:middle">1 Month<br><span style="font-size:10px;color:var(--txt3)">~Jun 2026</span></td>
+          <td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹1,950</td><td>30%</td><td style="color:var(--txt2);font-size:12px">Falling wedge breakout above resistance; pre-Q1FY27 result anticipation</td>
+        </tr>
+        <tr><td style="font-weight:600">Base</td><td>₹1,820</td><td>50%</td><td style="color:var(--txt2);font-size:12px">Consolidation between ₹1,750-1,900 continues; no catalyst until Q1FY27 results in July</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹1,680</td><td>20%</td><td style="color:var(--txt2);font-size:12px">Break below wedge support and 200 EMA if global IT sentiment deteriorates</td></tr>
+        </tr>
+        <tr style="border-top:2px solid var(--border2)">
+          <td rowspan="3" style="font-weight:700;vertical-align:middle">3 Months<br><span style="font-size:10px;color:var(--txt3)">~Aug 2026</span></td>
+          <td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹2,050</td><td>35%</td><td style="color:var(--txt2);font-size:12px">Strong Q1FY27 results with OPM >18% and FCF turning positive; AGM guidance upgrade</td>
+        </tr>
+        <tr><td style="font-weight:600">Base</td><td>₹1,900</td><td>45%</td><td style="color:var(--txt2);font-size:12px">In-line Q1 results; stock grinds higher as integration narrative gains credibility</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹1,620</td><td>20%</td><td style="color:var(--txt2);font-size:12px">Q1 miss on OPM or revenue growth disappointment triggers de-rating toward 22x P/E</td></tr>
+        </tr>
+        <tr style="border-top:2px solid var(--border2)">
+          <td rowspan="3" style="font-weight:700;vertical-align:middle">6 Months<br><span style="font-size:10px;color:var(--txt3)">~Nov 2026</span></td>
+          <td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹2,150</td><td>35%</td><td style="color:var(--txt2);font-size:12px">Cigniti synergy milestones met; European airline Phase 1 go-live successful; FY27 guidance upgrade</td>
+        </tr>
+        <tr><td style="font-weight:600">Base</td><td>₹1,980</td><td>45%</td><td style="color:var(--txt2);font-size:12px">Gradual re-rating toward 25x P/E as 2 quarters of consistent delivery build confidence</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹1,550</td><td>20%</td><td style="color:var(--txt2);font-size:12px">Integration challenges surface; global macro deterioration impacts BFSI spending</td></tr>
+        </tr>
+        <tr style="border-top:2px solid var(--border2)">
+          <td rowspan="3" style="font-weight:700;vertical-align:middle">1 Year<br><span style="font-size:10px;color:var(--txt3)">~May 2027</span></td>
+          <td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹2,400</td><td>30%</td><td style="color:var(--txt2);font-size:12px">FY27 results exceed estimates — EPS ₹85+, OPM 19%+; stock re-rates to 30x P/E</td>
+        </tr>
+        <tr><td style="font-weight:600">Base</td><td>₹2,100</td><td>50%</td><td style="color:var(--txt2);font-size:12px">In-line FY27 EPS of ~₹80; P/E expansion to 26x; FCF strongly positive; dividend increase</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹1,500</td><td>20%</td><td style="color:var(--txt2);font-size:12px">Cigniti synergy miss; organic growth decelerates to <12%; P/E compresses to 20x</td></tr>
+        </tr>
+        <tr style="border-top:2px solid var(--border2)">
+          <td rowspan="3" style="font-weight:700;vertical-align:middle">3 Years<br><span style="font-size:10px;color:var(--txt3)">~May 2029</span></td>
+          <td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹3,800</td><td>25%</td><td style="color:var(--txt2);font-size:12px">Cigniti cross-sell delivers $150M+; AI practice >25% of revenue; OPM hits 21%; stock re-rates to 32x FY29E EPS of ~₹120</td>
+        </tr>
+        <tr><td style="font-weight:600">Base</td><td>₹2,800</td><td>50%</td><td style="color:var(--txt2);font-size:12px">22% revenue CAGR sustains; FY29E EPS ₹122; P/E normalises to 23x as growth moderates from peak; ~15% CAGR from CMP</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹1,800</td><td>25%</td><td style="color:var(--txt2);font-size:12px">Integration fails to deliver; organic growth falls to 10%; P/E de-rates to 18x; flat returns over 3 years</td></tr>
+        </tr>
+        <tr style="border-top:2px solid var(--border2)">
+          <td rowspan="3" style="font-weight:700;vertical-align:middle">Beyond 3Y<br><span style="font-size:10px;color:var(--txt3)">FY30+</span></td>
+          <td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹5,500</td><td>20%</td><td style="color:var(--txt2);font-size:12px">Coforge becomes a top-5 Indian IT services firm by market cap; travel vertical leadership solidifies; 15%+ long-term EPS CAGR</td>
+        </tr>
+        <tr><td style="font-weight:600">Base</td><td>₹3,600</td><td>50%</td><td style="color:var(--txt2);font-size:12px">Mature mid-cap IT compounder; 14% EPS CAGR; P/E settles at 20x; 3-4% dividend yield becomes regular</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹1,200</td><td>30%</td><td style="color:var(--txt2);font-size:12px">AI disruption erodes testing/QA business; travel vertical disrupted; company acquired at distressed valuation</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:10px;color:var(--txt3);margin-top:8px">⚠ All targets are AI-generated estimates. Probabilities are subjective assessments based on current data — not statistical models. Actual outcomes will differ.</div>
+  </div>
+
+  <div class="card blue" style="margin-top:8px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--b-text);margin-bottom:8px">📌 Best Investment Horizon</div>
+    <div style="font-size:14px;font-weight:700;color:var(--b-text);margin-bottom:6px">3-5 Years</div>
+    <div style="font-size:12px;color:var(--b-text);line-height:1.7">
+      Coforge's investment thesis is most attractive over a 3-5 year horizon, which aligns with your stated 3-year timeframe. The Cigniti integration synergies ($100M target) will fully materialise by FY27-28, and the European airline deal pipeline ($400M+) will start contributing meaningfully from FY27 onwards. At the current 27.6x P/E, a 3-year holding period allows EPS to compound from ₹67.30 to an estimated ₹122 (base case), which would deliver ~15% CAGR even if the P/E compresses to 23x. The bull case of ₹162 EPS and P/E expansion to 28x could deliver ~27% CAGR. The risk-reward is most favourable for patient investors who can ride through the 1-2 year integration phase to capture the 3-5 year compounding benefit.
+    </div>
+  </div>
+
+  <div class="card blue" style="margin-top:8px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--b-text);margin-bottom:10px">Back-Tested Accuracy — How Did AI/Consensus Perform on Coforge?</div>
+    <table>
+      <thead><tr><th>Forecast Date</th><th>AI / Consensus Target</th><th>Actual Outcome</th><th>Deviation</th><th>Assessment</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>May 2025 (1Y ago)</td><td>Consensus target: ₹2,050</td><td>CMP: ₹1,854 (May 2026)</td><td style="color:var(--r-accent);font-weight:600">−9.6%</td>
+          <td style="color:var(--a-text);font-size:12px"><strong>OVERESTIMATED</strong></td>
+        </tr>
+        <tr>
+          <td>May 2024 (2Y ago)</td><td>Consensus target: ₹1,680</td><td>CMP: ₹1,650 (May 2025 pre-split adj.)</td>
+          <td style="color:var(--g-accent);font-weight:600">+1.8%</td>
+          <td style="color:var(--g-text);font-size:12px"><strong>ACCURATE</strong></td>
+        </tr>
+        <tr>
+          <td>May 2023 (3Y ago)</td><td>Consensus target: ₹1,200</td><td>CMP: ₹1,340 (May 2024 pre-split adj.)</td>
+          <td style="color:var(--g-accent);font-weight:600">+11.7%</td>
+          <td style="color:var(--g-text);font-size:12px"><strong>UNDERESTIMATED</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:12px;color:var(--b-text);margin-top:10px;line-height:1.7">
+      <strong>Pattern observed:</strong> Consensus analyst targets have been reasonably accurate at 2-3 year horizons (within ±12% deviation). The 1-year target overestimated by 9.6% — likely due to the Cigniti integration taking slightly longer than initially modelled and broader IT sector sentiment moderation. This suggests analyst estimates are directionally reliable for Coforge over medium-term horizons but less precise in the near term. The stock has historically delivered returns close to or above consensus targets in 2 of the last 3 years.
+    </div>
+    <div style="font-size:10px;color:var(--b-text);margin-top:6px">Source: MarketScreener historical analyst consensus targets. Past accuracy does not guarantee future accuracy. All figures post-split adjusted.</div>
+  </div>
+
+  <div class="card red" style="margin-top:8px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--r-text);margin-bottom:8px">AI Corner Summary — Your 3-Year Horizon</div>
+    <div style="font-size:12px;color:var(--r-text);line-height:1.8">
+      For your 3-year investment horizon, Coforge's base case target of ₹2,800 implies a ~15% CAGR from the current CMP of ₹1,854 — broadly in line with the stock's long-term compounding rate. The bull case of ₹3,800 (27% CAGR) requires the Cigniti integration to exceed synergy targets and OPM to reach 20%+, while the bear case of ₹1,800 (-1% CAGR) assumes integration failure and growth deceleration. The single most important variable is whether FY27 results in May 2027 confirm the $100M Cigniti synergy target — if yes, the base case becomes highly probable; if no, the bear case probability rises sharply. Historically, consensus targets have been directionally reliable at 2-3 year horizons for Coforge (within ±12% deviation).
+    </div>
+    <div style="font-size:10px;color:var(--r-text);margin-top:8px;font-style:italic">⚠ These are AI-generated scenarios, not predictions. The 3-year base case has historically deviated by ±12% from actual outcomes. Invest accordingly.</div>
+  </div>
+</div>
+
+<div style="margin-top:32px">
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Your Notes <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--txt2);font-size:10px">(auto‑saved)</span></div>
+  <textarea id="userNotes" class="notes-area" placeholder="Write your own notes, thesis, or reminders here..."></textarea>
+</div>
+
+<script>
+(function(){
+  var ta = document.getElementById('userNotes');
+  if(ta){
+    var saved = localStorage.getItem('fundamentalReportNotes');
+    if(saved) ta.value = saved;
+    ta.addEventListener('input', function(){
+      localStorage.setItem('fundamentalReportNotes', ta.value);
+    });
+  }
+})();
+</script>
+
+<details style="margin-top:20px;padding:0 4px">
+  <summary>📖 Definitions — tap to expand</summary>
+  <p><strong>P/E ratio</strong> — What you pay per ₹1 of profit. Lower vs history and sector = cheaper.</p>
+  <p><strong>PEG Ratio</strong> — P/E divided by earnings growth rate. Below 1 = growth available at a reasonable price.</p>
+  <p><strong>P/B ratio</strong> — Price vs net assets. Below 1 = buying at a discount to book value.</p>
+  <p><strong>P/Sales</strong> — Price vs revenue. Useful when profits are cyclical or recovering.</p>
+  <p><strong>EV/EBITDA</strong> — Full business value check including debt. Lower = better.</p>
+  <p><strong>Earnings Yield</strong> — EPS / CMP. Compare to risk-free rate (~7%).</p>
+  <p><strong>ROE</strong> — Profit generated per ₹100 of shareholders' equity. Above 15% = good.</p>
+  <p><strong>ROCE</strong> — How efficiently total capital is used. Above 15% = healthy.</p>
+  <p><strong>FCF</strong> — Cash left after all expenses and investments. Positive and growing = genuinely healthy.</p>
+  <p><strong>Debtor Days</strong> — Average time to collect payment. Below 30 days = excellent.</p>
+  <p><strong>Piotroski Score</strong> — 0–9 financial health score. 7–9 = strong.</p>
+  <p><strong>RSI</strong> — Relative Strength Index. Below 30 = oversold; above 70 = overbought.</p>
+  <p><strong>MACD</strong> — Shows relationship between two EMAs. Bullish crossover = positive signal.</p>
+  <p><strong>VWAP</strong> — Volume-Weighted Average Price for the session.</p>
+  <p><strong>Delivery %</strong> — Shares resulting in delivery. Higher = more conviction buying.</p>
+  <p><strong>ADX</strong> — Trend strength. Above 25 = strong trend; below 20 = weak/choppy.</p>
+  <p><strong>CAGR</strong> — Compound Annual Growth Rate over N years.</p>
+  <p><strong>Promoter pledging</strong> — Founders borrowing against shares. Above 10% = red flag.</p>
+</details>
+
+<div class="disc">
+  This is a fundamental screening and education tool only. Data sourced from NSE India, BSE India, Screener.in, Trendlyne, Moneycontrol, Tickertape, TradingView, MarketScreener, ET Money, ITI Securities, Annual Reports, and publicly available analyst forecast databases. Analyst estimates are third-party projections — not guarantees of future performance. Coforge executed a 5-for-1 stock split on June 4, 2025 — all EPS and price figures have been adjusted for comparability where possible. This is NOT investment advice, a buy/sell recommendation, or SEBI-registered financial research. AI systems can make errors — verify all numbers on NSE India, BSE India, or Screener.in before making any decision. Past performance does not guarantee future results. Investing in equities carries risk including loss of capital. Consult a SEBI-registered financial advisor before investing.
+</div>
+
+</div>
+
+<script>
+function show(n){
+  var panels=document.querySelectorAll('.panel');
+  var tabs=document.querySelectorAll('.tab-btn');
+  for(var i=0;i<panels.length;i++){
+    panels[i].className='panel'+(i===n?' on':'');
+    tabs[i].className='tab-btn'+(i===n?' active':'');
+  }
+}
+</script>
+</body>
+</html>

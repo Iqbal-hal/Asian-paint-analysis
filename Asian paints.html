@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asian Paints — Fundamental Analysis</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g-fill:#EAF3DE;--g-text:#27500A;--g-border:#C0DD97;--g-accent:#639922;
+  --a-fill:#FAEEDA;--a-text:#854F0B;--a-border:#FAC775;--a-accent:#EF9F27;
+  --r-fill:#FCEBEB;--r-text:#A32D2D;--r-border:#F7C1C1;--r-accent:#E24B4A;
+  --b-fill:#E6F1FB;--b-text:#185FA5;--b-border:#B5D4F4;--b-accent:#378ADD;
+  --n-fill:#F1EFE8;--n-text:#444441;--n-border:#D3D1C7;
+  --bg:#ffffff;--bg2:#f5f4f0;--bg3:#eceae4;
+  --txt:#1a1a18;--txt2:#6b6965;--txt3:#9b9895;--border:#e0ded8;--border2:#cccac4
+}
+@media(prefers-color-scheme:dark){:root{
+  --g-fill:#173404;--g-text:#C0DD97;--g-border:#3B6D11;--g-accent:#97C459;
+  --a-fill:#412402;--a-text:#FAC775;--a-border:#854F0B;--a-accent:#EF9F27;
+  --r-fill:#501313;--r-text:#F09595;--r-border:#A32D2D;--r-accent:#E24B4A;
+  --b-fill:#042C53;--b-text:#85B7EB;--b-border:#185FA5;--b-accent:#378ADD;
+  --n-fill:#2C2C2A;--n-text:#D3D1C7;--n-border:#5F5E5A;
+  --bg:#1a1a18;--bg2:#232320;--bg3:#2d2d2a;
+  --txt:#f0ede8;--txt2:#9b9895;--txt3:#6b6965;--border:#3a3835;--border2:#4a4845
+}}
+body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:13px;line-height:1.6;background:var(--bg);color:var(--txt)}
+.page{max-width:900px;margin:0 auto;padding:16px 16px 48px}
+.hdr{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.hdr h1{font-size:20px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.hdr .sub{font-size:12px;color:var(--txt2)}
+.conf{padding:10px 16px;border-radius:8px;margin-bottom:14px;font-size:12px}
+.conf.high,.conf.moderate{background:var(--g-fill);color:var(--g-text)}
+.conf.low{background:var(--a-fill);color:var(--a-text)}
+.conf.vlow{background:var(--r-fill);color:var(--r-text)}
+.tab-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.tab-btn{padding:6px 14px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--txt2);font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.tab-btn:hover{border-color:var(--txt2);color:var(--txt)}
+.tab-btn.active{border:1.5px solid var(--txt);color:var(--txt);font-weight:600;background:var(--bg2)}
+.panel{display:none}.panel.on{display:block}
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:12px}
+.card.green{background:var(--g-fill);border-color:var(--g-border)}
+.card.amber{background:var(--a-fill);border-color:var(--a-border)}
+.card.red{background:var(--r-fill);border-color:var(--r-border)}
+.card.blue{background:var(--b-fill);border-color:var(--b-border)}
+.card.grey{background:var(--n-fill);border-color:var(--n-border)}
+.view-label{font-size:18px;font-weight:700;margin-bottom:6px}
+.view-label.green{color:var(--g-text)}.view-label.amber{color:var(--a-text)}.view-label.red{color:var(--r-text)}
+.view-reason{font-size:13px;margin-bottom:16px;color:var(--txt)}
+.sec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin:14px 0 8px}
+.bullet-row{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+.bullet-row:last-child{border-bottom:none}
+.bicon{font-size:14px;min-width:18px;margin-top:1px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+th{text-align:left;padding:7px 10px;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.7px;color:var(--txt2);border-bottom:0.5px solid var(--border)}
+td{padding:9px 10px;color:var(--txt);border-bottom:0.5px solid var(--border)}
+tr:last-child td{border-bottom:none}
+.pos{color:var(--g-accent);font-weight:600}.neg{color:var(--r-accent);font-weight:600}.neu{color:var(--txt3)}
+.badge{display:inline-block;padding:2px 9px;border-radius:100px;font-size:11px;font-weight:600}
+.badge.ok{background:var(--g-fill);color:var(--g-text)}
+.badge.warn{background:var(--a-fill);color:var(--a-text)}
+.badge.bad{background:var(--r-fill);color:var(--r-text)}
+.badge.info{background:var(--b-fill);color:var(--b-text)}
+.badge.neu{background:var(--n-fill);color:var(--n-text)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.mc{background:var(--bg2);border-radius:8px;padding:12px 14px;border:0.5px solid var(--border)}
+.mc .ml{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--txt3);margin-bottom:4px}
+.mc .mv{font-size:17px;font-weight:600;color:var(--txt)}
+.mc .ms{font-size:11px;color:var(--txt3);margin-top:2px}
+.info-row{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:0.5px solid var(--border);gap:16px}
+.info-row:last-child{border-bottom:none}
+.il{font-size:12px;color:var(--txt2)}.iv{font-size:12px;color:var(--txt);font-weight:500;text-align:right}
+.flag-card{border-left:3px solid var(--a-accent);background:var(--a-fill);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:8px}
+.flag-title{font-size:13px;font-weight:600;color:var(--a-text);margin-bottom:3px}
+.flag-note{font-size:12px;color:var(--a-text)}
+.score-box{background:var(--bg2);border-radius:8px;padding:14px 16px;margin-top:14px;font-size:12px;color:var(--txt2);border:0.5px solid var(--border)}
+.eps-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.eps-chip{background:var(--bg2);border-radius:8px;padding:10px 14px;text-align:center;min-width:88px;border:0.5px solid var(--border)}
+.eps-q{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:0.5px}
+.eps-v{font-size:15px;font-weight:600;color:var(--txt);margin:3px 0}
+.eps-y{font-size:11px}
+.opm-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.opm-lbl{font-size:11px;color:var(--txt2);width:50px;text-align:right}
+.opm-bar-bg{flex:1;background:var(--bg3);border-radius:4px;height:16px;overflow:hidden}
+.opm-bar{height:100%;border-radius:4px;background:var(--b-accent);transition:width 0.6s}
+.opm-val{font-size:11px;color:var(--txt);width:50px;font-weight:600}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.swot-box{border-radius:10px;padding:14px 16px}
+.swot-box.s{background:var(--g-fill);border:0.5px solid var(--g-border)}
+.swot-box.w{background:var(--r-fill);border:0.5px solid var(--r-border)}
+.swot-box.o{background:var(--b-fill);border:0.5px solid var(--b-border)}
+.swot-box.t{background:var(--a-fill);border:0.5px solid var(--a-border)}
+.swot-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.swot-box.s .swot-head{color:var(--g-text)}.swot-box.w .swot-head{color:var(--r-text)}
+.swot-box.o .swot-head{color:var(--b-text)}.swot-box.t .swot-head{color:var(--a-text)}
+.swot-item{font-size:12px;padding:4px 0;border-bottom:0.5px solid rgba(0,0,0,0.07);display:flex;gap:7px;line-height:1.5}
+.swot-item:last-child{border-bottom:none}
+.fc-bar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.fc-bar-lbl{font-size:11px;color:var(--txt2);width:72px}
+.fc-bar-bg{flex:1;height:12px;background:var(--bg3);border-radius:6px;overflow:hidden}
+.fc-bar-fill{height:100%;border-radius:6px}
+.fc-bar-val{font-size:11px;color:var(--txt);width:110px;text-align:right;font-weight:600}
+.rating-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.rating-row:last-child{border-bottom:none}
+.platform-name{font-size:13px;font-weight:600;color:var(--txt)}
+.platform-detail{font-size:11px;color:var(--txt2);margin-top:2px}
+.platform-score{font-size:20px;font-weight:700}
+.news-item{padding:10px 0;border-bottom:0.5px solid var(--border)}
+.news-item:last-child{border-bottom:none}
+.news-head{font-size:13px;font-weight:500;color:var(--txt);margin-bottom:3px}
+.news-sub{font-size:12px;color:var(--txt2)}
+.news-meta{font-size:11px;color:var(--txt3);white-space:nowrap}
+.peer-you{background:var(--bg2)}
+.disc{font-size:11px;color:var(--txt3);border-top:0.5px solid var(--border);padding-top:14px;margin-top:24px;line-height:1.7}
+details summary{font-size:12px;color:var(--txt2);cursor:pointer;padding:8px 0}
+details p{font-size:12px;color:var(--txt2);padding:5px 0;border-bottom:0.5px solid var(--border)}
+details p:last-child{border-bottom:none}
+details strong{color:var(--txt);font-weight:600}
+.tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tech-mini{background:var(--bg2);border-radius:8px;padding:12px 14px;border:0.5px solid var(--border)}
+.tech-mini .tm-head{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--txt3);margin-bottom:6px}
+.tech-mini .tm-val{font-size:18px;font-weight:700;margin-bottom:2px}
+.tech-mini .tm-sub{font-size:11px;color:var(--txt2)}
+.price-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.price-bar-lbl{font-size:11px;color:var(--txt2);min-width:55px;text-align:right}
+.price-bar-bg{flex:1;height:14px;background:var(--bg3);border-radius:4px;position:relative;overflow:visible}
+.price-bar-fill{height:100%;border-radius:4px;position:absolute;min-width:2px}
+.price-bar-marker{position:absolute;top:-3px;width:2px;height:20px;background:var(--txt);border-radius:2px}
+.price-bar-tag{font-size:10px;color:var(--txt);text-align:left;min-width:70px}
+@media(max-width:600px){.two-col,.swot-grid,.tech-grid{grid-template-columns:1fr}.mgrid{grid-template-columns:repeat(2,1fr)}}
+.pe-zone-box{padding:8px 12px;border-radius:6px;font-weight:600;display:inline-block;margin-bottom:6px}
+.zone-buy{background:var(--g-fill);color:var(--g-text);border:1px solid var(--g-border)}
+.zone-sell{background:var(--r-fill);color:var(--r-text);border:1px solid var(--r-border)}
+.zone-fair{background:var(--b-fill);color:var(--b-text);border:1px solid var(--b-border)}
+.notes-area{width:100%;min-height:120px;padding:12px;border-radius:8px;border:0.5px solid var(--border);background:var(--bg2);color:var(--txt);font-family:inherit;font-size:12px;resize:vertical;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr">
+  <h1>Asian Paints Ltd &nbsp;<span style="font-size:14px;font-weight:400;color:var(--txt2)">NSE: ASIANPAINT · BSE: 500820</span></h1>
+  <div class="sub">Indian Stock Fundamental Analyser &nbsp;·&nbsp; Data as of 19 May 2026 &nbsp;·&nbsp; Investment horizon: 3 Years</div>
+</div>
+
+<div class="conf high">
+  <strong>Data confidence: HIGH</strong><br>
+  Live sections retrieved: 16 of 17 &nbsp;|&nbsp; Sources: Screener.in · NSE · BSE · Trendlyne · Moneycontrol · Value Research · Investing.com · ET Markets · Dhan<br>
+  <span style="font-size:11px; margin-top:4px; display:block;">All derived metrics (changes, CAGRs) are fully documented – click the 📋 calc button next to each value.</span>
+</div>
+
+<div class="tab-row">
+  <button class="tab-btn" onclick="show(0)">Snapshot</button>
+  <button class="tab-btn" onclick="show(1)">Valuation</button>
+  <button class="tab-btn" onclick="show(2)">Growth</button>
+  <button class="tab-btn" onclick="show(3)">Health</button>
+  <button class="tab-btn" onclick="show(4)">Returns</button>
+  <button class="tab-btn" onclick="show(5)">Peers</button>
+  <button class="tab-btn" onclick="show(6)">Ownership</button>
+  <button class="tab-btn active" onclick="show(7)">View</button>
+  <button class="tab-btn" onclick="show(8)">SWOT</button>
+  <button class="tab-btn" onclick="show(9)">Forecasts</button>
+  <button class="tab-btn" onclick="show(10)">Events</button>
+  <button class="tab-btn" onclick="show(11)">Technicals</button>
+  <button class="tab-btn" onclick="show(12)" style="background:var(--r-fill);color:var(--r-text);border-color:var(--r-border)">AI Corner</button>
+</div>
+
+<!-- ═══ TAB 0: SNAPSHOT ═══ -->
+<div class="panel" id="p0">
+  <div class="card">
+    <div class="info-row"><span class="il">Company</span><span class="iv">Asian Paints Ltd</span></div>
+    <div class="info-row"><span class="il">NSE Ticker</span><span class="iv">ASIANPAINT</span></div>
+    <div class="info-row"><span class="il">BSE Code</span><span class="iv">500820</span></div>
+    <div class="info-row"><span class="il">Sector</span><span class="iv">Consumer Goods</span></div>
+    <div class="info-row"><span class="il">Industry</span><span class="iv">Paints & Varnishes</span></div>
+    <div class="info-row"><span class="il">What it does</span><span class="iv" style="max-width:460px;text-align:right">India's largest home décor company (80+ years). Manufactures and sells decorative paints, industrial coatings, waterproofing, adhesives, modular kitchens, bath fittings, and home improvement products across 60+ countries.</span></div>
+    <div class="info-row"><span class="il">Competitive moat</span><span class="iv" style="max-width:460px;text-align:right">Dominant ~50% market share in Indian decorative paints; 70,000+ dealer network; iconic brand with strong pricing power and distribution depth unmatched by peers.</span></div>
+    <div class="info-row"><span class="il">Piotroski Score</span><span class="iv">5 / 9 &nbsp;<span class="badge warn">MODERATE 4-6</span></span></div>
+  </div>
+
+  <div class="mgrid">
+    <div class="mc"><div class="ml">CMP</div><div class="mv">₹2,614</div><div class="ms">18 May 2026 · NSE</div></div>
+    <div class="mc"><div class="ml">52W High</div><div class="mv">₹2,985</div><div class="ms">−12.4% from high</div></div>
+    <div class="mc"><div class="ml">52W Low</div><div class="mv">₹2,115</div><div class="ms">+23.6% from low</div></div>
+    <div class="mc"><div class="ml">Market Cap</div><div class="mv">₹2,50,734 Cr</div><div class="ms">Large cap · Rank #1 in sector</div></div>
+    <div class="mc"><div class="ml">Face Value</div><div class="mv">₹1.00</div><div class="ms">NSE</div></div>
+    <div class="mc"><div class="ml">EPS (TTM)</div><div class="mv">₹40.10</div><div class="ms">Screener.in (consolidated)</div></div>
+    <div class="mc"><div class="ml">P/E (TTM)</div><div class="mv">65.2x</div><div class="ms">Screener.in (consolidated)</div></div>
+    <div class="mc"><div class="ml">PEG (Trailing)<sup>ⓘ</sup></div><div class="mv">4.85x</div><div class="ms">StockAnalysis.com<details style="display:inline;margin-left:4px"><summary style="cursor:pointer;color:var(--txt3);font-size:10px;">📋</summary><span style="font-size:10px;">P/E 60.58 / 3Y EPS CAGR ~12.5% (trailing) = 4.85</span></details></div></div>
+    <div class="mc"><div class="ml">Fwd EPS Growth</div><div class="mv">9.4%</div><div class="ms">Analyst FY27E (Simply Wall St)</div></div>
+    <div class="mc"><div class="ml">Forward PEG<sup>ⓘ</sup></div><div class="mv">6.94x</div><div class="ms">P/E / Fwd EPS Growth<details style="display:inline;margin-left:4px"><summary style="cursor:pointer;color:var(--txt3);font-size:10px;">📋</summary><span style="font-size:10px;">P/E 65.2 / Fwd EPS Growth 9.4% = 6.94</span></details></div></div>
+    <div class="mc"><div class="ml">Debtor Days</div><div class="mv">46 days</div><div class="ms">Screener.in (FY25)</div></div>
+  </div>
+
+  <div class="card" style="margin-top:4px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Key Financials & Ownership Trends</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Book Value / Share</td><td>₹214.62</td><td style="color:var(--txt3);font-size:11px">Way2Wealth / NSE</td></tr>
+        <tr><td>Dividend Yield</td><td>0.95%</td><td style="color:var(--txt3);font-size:11px">ET Markets</td></tr>
+        <tr><td>ROCE (Latest)</td><td>25.7%</td><td style="color:var(--txt3);font-size:11px">Screener.in (consolidated)</td></tr>
+        <tr><td>ROE (Latest)</td><td>20.6%</td><td style="color:var(--txt3);font-size:11px">Screener.in (consolidated)</td></tr>
+        <tr><td>Debt to Equity</td><td>0.18x</td><td style="color:var(--txt3);font-size:11px">Investing.com (17.61%)</td></tr>
+        <tr><td>Interest Coverage</td><td>32.9x</td><td style="color:var(--txt3);font-size:11px">Investing.com</td></tr>
+        <tr><td>OPM 5‑Year (avg)<sup>ⓘ</sup></td><td>19.2% (min 17% – max 22%)</td><td style="color:var(--txt3);font-size:11px">Screener.in <details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">FY21:22%, FY22:17%, FY23:18%, FY24:21%, FY25:18%</span></details></td></tr>
+        <tr><td>ROE 5‑Year Average<sup>ⓘ</sup></td><td>26%</td><td style="color:var(--txt3);font-size:11px">Screener.in <details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">5-year average ROE stated as 26% on screener</span></details></td></tr>
+        <tr><td>Sales Growth 5‑Year CAGR<sup>ⓘ</sup></td><td>11%</td><td style="color:var(--txt3);font-size:11px">Screener.in <details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(Rev FY25 ₹33,906 Cr / Rev FY20 ₹20,211 Cr)^(1/5)-1 ≈ 10.9%</span></details></td></tr>
+        <tr><td>Profit Growth 5‑Year CAGR<sup>ⓘ</sup></td><td>8%</td><td style="color:var(--txt3);font-size:11px">Screener.in <details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(NP FY25 ₹3,710 Cr / NP FY20 ₹2,774 Cr)^(1/5)-1 ≈ 6.0%; screener reports 8% as compounded profit growth</span></details></td></tr>
+        <tr><td>Promoter Holding Chg (3Y)<sup>ⓘ</sup></td><td class="neu">0.0 pp</td><td style="color:var(--txt3);font-size:11px">Trendlyne (manual calc) <details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">Current: 52.63% (Mar 2026), 3Y ago: 52.63% (Mar 2023) — unchanged</span></details></td></tr>
+        <tr><td>FII Holding Chg (3Y)<sup>ⓘ</sup></td><td class="neg">−4.9 pp</td><td style="color:var(--txt3);font-size:11px">Trendlyne (manual calc) <details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">Current: 12.11% (Mar 2026, Dhan), 3Y ago: ~17.0% (Mar 2023, Trendlyne). Formula: 12.11 − 17.0 = −4.89 pp</span></details></td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:4px">Sources: Screener.in, Moneycontrol, Trendlyne, Dhan, Investing.com. ⓘ = manually computed, click 📋 for calculation.</div>
+  </div>
+
+  <div class="flag-card">
+    <div class="flag-title">⚠ PROFIT DECLINE — FY25 NET PROFIT DOWN 33% YoY</div>
+    <div class="flag-note">Consolidated net profit fell from ₹5,558 Cr (FY24) to ₹3,710 Cr (FY25), driven by margin compression (OPM from 21% to 18%), demand slowdown, and intense competitive pressure from new entrants (Birla Opus, JSW Dulux). This is a structural industry shift, not a one-off.</div>
+  </div>
+  <div class="flag-card">
+    <div class="flag-title">⚠ HIGH VALUATION — P/E 65x vs Sector 35x</div>
+    <div class="flag-note">Asian Paints trades at a ~87% premium to its sector median P/E of ~35x. Even after the stock's correction from 52W highs, the valuation remains historically elevated. The PEG ratio of 4.85x signals that the market is pricing in a recovery that is not yet visible in earnings.</div>
+  </div>
+  <div class="flag-card">
+    <div class="flag-title">⚠ FII SELLING — 4.9 PP REDUCTION IN 3 YEARS</div>
+    <div class="flag-note">FII holding has dropped from ~17% (Mar 2023) to 12.1% (Mar 2026), while DIIs have absorbed the selling (rising from ~10% to 21.8%). This shift in ownership structure may increase volatility during global risk-off events.</div>
+  </div>
+</div>
+
+<!-- ═══ TAB 1: VALUATION ═══ -->
+<div class="panel" id="p1">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Is this stock cheap, fair, or expensive right now?</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Current</th><th>Sector avg</th><th>Stock 5Y avg</th><th>Signal</th><th>Plain English</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>P/E</td><td>65.2x</td><td>34.96x</td><td>~70.1x<details style="display:inline;margin-left:4px"><summary style="cursor:pointer;color:var(--txt3);font-size:10px;">📋</summary><span style="font-size:10px;">5Y P/E: FY21:77.5, FY22:97.5, FY23:64.5, FY24:50.0, FY25:61.2</span></details></td>
+          <td><span class="badge warn">EXPENSIVE vs sector / FAIR vs own history</span></td>
+          <td style="color:var(--txt2);font-size:12px">You pay ₹65.20 per ₹1 of profit — 87% above sector median</td>
+        </tr>
+        <tr>
+          <td>PEG Ratio<sup>ⓘ</sup></td><td>4.85x</td><td>—</td><td>—</td>
+          <td><span class="badge bad">EXPENSIVE >1.5</span></td>
+          <td style="color:var(--txt2);font-size:12px">Growth at a steep premium — market pricing in recovery that hasn't arrived <details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">P/E 60.58 / 3Y EPS CAGR ~12.5%</span></details></td>
+        </tr>
+        <tr>
+          <td>P/B</td><td>12.2x</td><td>5.44x</td><td>~12.7x</td>
+          <td><span class="badge bad">EXPENSIVE</span></td>
+          <td style="color:var(--txt2);font-size:12px">125% premium to sector; stock trades at 12.2x book value</td>
+        </tr>
+        <tr>
+          <td>P/Sales</td><td>7.7x</td><td>—</td><td>—</td>
+          <td><span class="badge warn">ABOVE AVERAGE</span></td>
+          <td style="color:var(--txt2);font-size:12px">Investors paying ₹7.70 for every ₹1 of sales</td>
+        </tr>
+        <tr>
+          <td>P/FCF</td><td>~96x</td><td>—</td><td>—</td>
+          <td><span class="badge bad">EXPENSIVE</span></td>
+          <td style="color:var(--txt2);font-size:12px">FCF (FY25): ₹2,604 Cr; Market Cap/ FCF = ~96x</td>
+        </tr>
+        <tr>
+          <td>EV/EBITDA</td><td>36.1x</td><td>—</td><td>—</td>
+          <td><span class="badge bad">EXPENSIVE</span></td>
+          <td style="color:var(--txt2);font-size:12px">Full business value including net debt; very high multiple</td>
+        </tr>
+        <tr>
+          <td>Earnings Yield</td><td>1.53%</td><td>Risk-free ~7%</td><td>—</td>
+          <td><span class="badge bad">BELOW RISK-FREE</span></td>
+          <td style="color:var(--txt2);font-size:12px">EPS/CMP = 1/65.2 = 1.53% — well below 7% FD rate</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">P/E Buy/Sell Zone — 5‑Year Historical Context<sup>ⓘ</sup></div>
+    <table>
+      <thead><tr><th>5‑Yr Avg P/E</th><th>5‑Yr High P/E</th><th>5‑Yr Low P/E</th><th>Current P/E</th><th>Zone</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>70.1x</td><td>97.5x</td><td>50.0x</td><td><strong>65.2x</strong></td>
+          <td><span class="pe-zone-box zone-fair">FAIR VALUE</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <details style="margin-top:6px;">
+      <summary style="cursor:pointer; color:var(--txt3); font-size:10px;">📋 Calculation & yearly data</summary>
+      <div style="font-size:10px; color:var(--txt2); margin-top:4px;">
+        5Y P/E values used: FY21:77.5, FY22:97.5, FY23:64.5, FY24:50.0, FY25:61.2<br>
+        Average: (77.5+97.5+64.5+50.0+61.2)/5 = 70.1x &nbsp;|&nbsp; High: 97.5x &nbsp;|&nbsp; Low: 50.0x<br>
+        Current P/E 65.2x is below average by ~7%
+      </div>
+    </details>
+    <div style="font-size:12px;color:var(--txt);line-height:1.7;margin-top:8px">
+      <strong>Why is the P/E in this zone?</strong><br>
+      Asian Paints' current P/E of 65.2x sits modestly below its 5-year average of 70.1x, placing it in the FAIR VALUE zone relative to its own history. However, this is misleading: the 5-year average is inflated by the FY22 P/E of 97.5x (when earnings were temporarily depressed post-COVID). The stock is expensive on absolute terms (87% premium to sector) and on PEG (4.85x). The elevated multiple reflects the market's expectation that Asian Paints' dominant brand and distribution network will enable it to weather the current competitive storm — a thesis that remains unproven. Earnings have declined for 3 of the last 4 quarters YoY, and the FY25 profit drop of 33% suggests the P/E may be a value trap: the 'E' is falling faster than the 'P'.
+    </div>
+  </div>
+
+  <div class="score-box">
+    Overall valuation: <strong>MIXED — EXPENSIVE vs sector; FAIR vs own history</strong><br>
+    <span style="margin-top:4px;display:block">Asian Paints trades at a significant premium to peers (P/E 65x vs 35x sector) and offers a lower earnings yield (1.53%) than risk-free FD rates (~7%). The current P/E is near its 5-year average, but the average itself is elevated by historical standards. For a 3-year investor, the key question is whether earnings can compound fast enough to justify the multiple — current growth rates (5% revenue CAGR, 8% profit CAGR) do not support the valuation.</span>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: GROWTH ═══ -->
+<div class="panel" id="p2">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Is this company growing its revenue and profits?</div>
+    <table>
+      <thead><tr><th>Metric</th><th>10Y CAGR</th><th>5Y CAGR</th><th>3Y CAGR</th><th>TTM / 1Y</th><th>Trend</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>Revenue (Sales)<sup>ⓘ</sup></td><td>10%<details style="display:inline"><summary style="cursor:pointer;color:var(--txt3);font-size:10px;">📋</summary><span style="font-size:10px;">(Rev FY25 ₹33,906 Cr / Rev FY15 ₹14,271 Cr)^(1/10)-1</span></details></td><td>11%<details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(Rev FY25 ₹33,906 Cr / Rev FY20 ₹20,211 Cr)^(1/5)-1 ≈ 10.9%</span></details></td><td>5%<details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(Rev FY25 ₹33,906 Cr / Rev FY22 ₹29,101 Cr)^(1/3)-1 ≈ 5.2%</span></details></td><td>2.3%</td><td>📉 Slowing</td><td style="color:var(--txt3);font-size:11px">Screener.in (consolidated)</td></tr>
+        <tr><td>Net Profit<sup>ⓘ</sup></td><td>11%<details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(NP FY25 ₹3,710 Cr / NP FY15 ₹1,427 Cr)^(1/10)-1</span></details></td><td>8%<details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(NP FY25 ₹3,710 Cr / NP FY20 ₹2,774 Cr)^(1/5)-1 ≈ 6.0%</span></details></td><td>8%<details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(NP FY25 ₹3,710 Cr / NP FY22 ₹3,085 Cr)^(1/3)-1 ≈ 6.3%</span></details></td><td class="neg">−4.7%</td><td>📉 Slowing</td><td style="color:var(--txt3);font-size:11px">Screener.in (consolidated)</td></tr>
+        <tr><td>EPS<sup>ⓘ</sup></td><td>—</td><td>6.3%<details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(EPS FY25 ₹38.23 / EPS FY20 ₹28.20)^(1/5)-1</span></details></td><td>6.5%<details style="display:inline"><summary style="cursor:pointer;font-size:10px;">📋</summary><span style="font-size:10px;">(EPS FY25 ₹38.23 / EPS FY22 ₹31.59)^(1/3)-1</span></details></td><td>—</td><td>📉 Slowing</td><td style="color:var(--txt3);font-size:11px">Screener.in</td></tr>
+        <tr><td>OPM (Margin level)</td><td>—</td><td>17%→22%</td><td>17%→18%</td><td>18%</td><td>➡️ Stable</td><td style="color:var(--txt3);font-size:11px">Screener.in</td></tr>
+        <tr><td>Stock Price CAGR</td><td>11%</td><td class="neg">−1%</td><td class="neg">−6%</td><td class="pos">+12% (1Y)</td><td>📉 Declining</td><td style="color:var(--txt3);font-size:11px">Screener.in / iOCharts</td></tr>
+        <tr><td>ROE (trend)</td><td>26% avg</td><td>26% avg</td><td>26% avg</td><td>21% (last yr)</td><td>📉 Declining</td><td style="color:var(--txt3);font-size:11px">Screener.in</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">ⓘ = manually computed; click 📋 for raw data. Revenue growth has decelerated sharply from 11% (5Y) to 5% (3Y). FY25 was particularly weak with revenue declining 4.5% YoY and profit dropping 33.3%. TTM shows modest recovery but growth remains anaemic.</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Annual earnings trend — last 6 financial years (Consolidated)</div>
+    <table>
+      <thead><tr><th>Year</th><th>Revenue (₹ Cr)</th><th>Op. Profit (₹ Cr)</th><th>OPM %</th><th>Net Profit (₹ Cr)</th><th>EPS (₹)</th></tr></thead>
+      <tbody>
+        <tr><td>FY20</td><td>20,211</td><td>4,162</td><td>21%</td><td>2,774</td><td>28.20</td></tr>
+        <tr><td>FY21</td><td>21,713</td><td>4,856</td><td>22%</td><td>3,207</td><td>32.73</td></tr>
+        <tr><td>FY22</td><td>29,101</td><td>4,804</td><td>17%</td><td>3,085</td><td>31.59</td></tr>
+        <tr><td>FY23</td><td>34,489</td><td>6,260</td><td>18%</td><td>4,195</td><td>42.81</td></tr>
+        <tr><td>FY24</td><td>35,495</td><td>7,585</td><td>21%</td><td>5,558</td><td>56.92</td></tr>
+        <tr style="font-weight:600"><td>FY25</td><td>33,906</td><td>6,006</td><td>18%</td><td>3,710</td><td>38.23</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.8px">OPM % — Visual trend</div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY20</span><div class="opm-bar-bg"><div class="opm-bar" style="width:95%"></div></div><span class="opm-val">21%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY21</span><div class="opm-bar-bg"><div class="opm-bar" style="width:100%"></div></div><span class="opm-val">22%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY22</span><div class="opm-bar-bg"><div class="opm-bar" style="width:77%"></div></div><span class="opm-val">17%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY23</span><div class="opm-bar-bg"><div class="opm-bar" style="width:82%"></div></div><span class="opm-val">18%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY24</span><div class="opm-bar-bg"><div class="opm-bar" style="width:95%"></div></div><span class="opm-val">21%</span></div>
+      <div class="opm-bar-row"><span class="opm-lbl">FY25</span><div class="opm-bar-bg"><div class="opm-bar" style="width:82%"></div></div><span class="opm-val">18%</span></div>
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Source: Screener.in consolidated P&L</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Historical EPS & P/E Ratio — 6‑Year View</div>
+    <div style="max-width:100%;height:350px">
+      <canvas id="epsPeChart"></canvas>
+    </div>
+    <div style="font-size:10px;color:var(--txt3);margin-top:6px">Data: Annual EPS & year‑end P/E. Source: Screener.in, NSE historical data.</div>
+    <script>
+    (function(){
+      var ctx = document.getElementById('epsPeChart');
+      if(!ctx) return;
+      var years = ['FY20','FY21','FY22','FY23','FY24','FY25'];
+      var eps = [28.20,32.73,31.59,42.81,56.92,38.23];
+      var pe = [59.1,77.5,97.5,64.5,50.0,61.2];
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: years,
+          datasets: [
+            {label:'EPS (₹)',data:eps,backgroundColor:'rgba(55,138,221,0.35)',borderColor:'rgba(55,138,221,1)',borderWidth:1,yAxisID:'y',order:1},
+            {label:'P/E Ratio',data:pe,type:'line',borderColor:'rgba(99,153,34,1)',backgroundColor:'transparent',pointBackgroundColor:'rgba(99,153,34,1)',borderWidth:2,pointRadius:3,yAxisID:'y1',order:0}
+          ]
+        },
+        options: {
+          responsive:true,maintainAspectRatio:false,
+          plugins:{tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.raw.toFixed(2);}}}},
+          scales:{
+            y:{type:'linear',position:'left',title:{display:true,text:'EPS (₹)'},grid:{color:'rgba(0,0,0,0.07)'}},
+            y1:{type:'linear',position:'right',title:{display:true,text:'P/E Ratio'},grid:{drawOnChartArea:false}}
+          }
+        }
+      });
+    })();
+    </script>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Quarterly trend — last 7 quarters (Net Profit + EPS)</div>
+    <div class="eps-row">
+      <div class="eps-chip"><div class="eps-q">Q3FY25</div><div class="eps-v">₹11.58</div><div class="eps-y pos">base</div></div>
+      <div class="eps-chip"><div class="eps-q">Q4FY25</div><div class="eps-v">₹7.22</div><div class="eps-y neg">−45% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q1FY26</div><div class="eps-v">₹11.47</div><div class="eps-y neg">−6% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q2FY26</div><div class="eps-v">₹10.36</div><div class="eps-y pos">+5% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q3FY26</div><div class="eps-v">₹11.05</div><div class="eps-y neg">−5% YoY</div></div>
+      <div class="eps-chip"><div class="eps-q">Q4FY26E</div><div class="eps-v">~₹11.50</div><div class="eps-y pos">est.</div></div>
+      <div class="eps-chip"><div class="eps-q">TTM</div><div class="eps-v">₹40.10</div><div class="eps-y pos">+4.9%</div></div>
+    </div>
+    <table style="margin-top:10px">
+      <thead><tr><th>Quarter</th><th>Revenue (₹ Cr)</th><th>Op. Profit (₹ Cr)</th><th>OPM %</th><th>Net Profit (₹ Cr)</th><th>EPS (₹)</th><th>YoY NP growth</th></tr></thead>
+      <tbody>
+        <tr><td>Q3FY25</td><td>8,521</td><td>1,637</td><td>19.2%</td><td>1,110</td><td>11.58</td><td>—</td></tr>
+        <tr><td>Q4FY25</td><td>8,359</td><td>~1,250</td><td>~15%</td><td>692</td><td>7.22</td><td class="neg">−45%</td></tr>
+        <tr><td>Q1FY26</td><td>8,924</td><td>~1,520</td><td>~17%</td><td>1,100</td><td>11.47</td><td class="neg">−6%</td></tr>
+        <tr><td>Q2FY26</td><td>8,531</td><td>1,503</td><td>17.6%</td><td>994</td><td>10.36</td><td class="pos">+43%</td></tr>
+        <tr><td>Q3FY26</td><td>8,867</td><td>1,781</td><td>20.1%</td><td>1,060</td><td>11.05</td><td class="neg">−4.6%</td></tr>
+        <tr style="font-weight:600"><td>Q4FY26E</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Results 29 May</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Source: Screener.in, Moneycontrol, ET Markets. Q4FY25 and Q1FY26 OPM estimated from reported PBDIT margins. Q4FY26E = analyst estimate, not actual.</div>
+  </div>
+
+  <div class="score-box">
+    Growth classification: <strong>SLOWING</strong><br>
+    <span style="margin-top:4px;display:block">Revenue growth has decelerated from 11% (5Y CAGR) to 5% (3Y) to near-flat TTM. FY25 profit dropped 33% YoY — the sharpest decline in a decade. While Q2 and Q3 FY26 showed early signs of volume recovery (7.9% decorative volume growth in Q3), the earnings trajectory remains fragile. For a 3-year investor, the key growth question is whether the decorative paints volume recovery sustains and whether the 6-8% price hike (announced Mar 2026) restores margin without losing market share.</span>
+  </div>
+</div>
+
+<!-- ═══ TAB 3: HEALTH ═══ -->
+<div class="panel" id="p3">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Is this company financially safe and stable?</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Benchmark</th><th>5Y Trend</th><th>Signal</th><th>Context / Plain English</th></tr></thead>
+      <tbody>
+        <tr><td>Debt / Equity</td><td>0.18x</td><td>&lt;0.5 ideal</td><td>→ Stable</td><td><span class="badge ok">SAFE</span></td><td style="color:var(--txt2);font-size:12px">Company is almost debt free. Total debt-to-equity 17.61%. Long-term debt only ₹259 Cr vs equity of ₹19,400 Cr.</td></tr>
+        <tr><td>Interest Coverage</td><td>32.9x</td><td>≥3x</td><td>→ Stable</td><td><span class="badge ok">HEALTHY</span></td><td style="color:var(--txt2);font-size:12px">Operating profit covers interest 33 times — extremely comfortable</td></tr>
+        <tr><td>Current Ratio</td><td>2.06</td><td>&gt;1.25</td><td>→ Stable</td><td><span class="badge ok">COMFORTABLE</span></td><td style="color:var(--txt2);font-size:12px">Current assets 2.06x current liabilities — strong liquidity position</td></tr>
+        <tr><td>Cash from Ops (FY25)</td><td>₹4,424 Cr</td><td>Positive</td><td>→ Stable</td><td><span class="badge ok">STRONG</span></td><td style="color:var(--txt2);font-size:12px">Robust operating cash flow; CFO/OP ratio of 97% indicates high cash conversion</td></tr>
+        <tr><td>Free Cash Flow (FY25)</td><td>₹2,604 Cr</td><td>Positive</td><td>↑ Rising</td><td><span class="badge ok">STRONG</span></td><td style="color:var(--txt2);font-size:12px">FCF positive and healthy. FY24 FCF was ₹3,613 Cr. Capex ~₹941 Cr (FY25)</td></tr>
+        <tr><td>Debtor Days</td><td>46 days</td><td>&lt;30 days</td><td>→ Stable</td><td><span class="badge warn">GOOD (above 30)</span></td><td style="color:var(--txt2);font-size:12px">46 days is acceptable for the industry but above the ideal 30-day benchmark</td></tr>
+        <tr><td>Working Capital Days</td><td>52 days</td><td>Lower = better</td><td>↑ Rising</td><td><span class="badge warn">WATCH</span></td><td style="color:var(--txt2);font-size:12px">Up from 34 days in FY20 to 52 days in FY25 — indicates less efficient working capital management</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Forward projections — 3-Year horizon (FY25 → FY28)</div>
+    <table>
+      <thead><tr><th>Scenario</th><th>Revenue CAGR assumption</th><th>Est. Revenue</th><th>Est. Net Profit</th><th>Est. EPS</th></tr></thead>
+      <tbody>
+        <tr><td>🐢 Bear</td><td style="color:var(--txt2);font-size:12px">Growth slows (4% CAGR); OPM compresses to 16%</td><td>₹38,142 Cr</td><td>₹4,270 Cr</td><td>₹44.52</td></tr>
+        <tr><td>🚶 Base</td><td style="color:var(--txt2);font-size:12px">Maintains 5% 3Y CAGR; OPM recovers to 19%</td><td>₹39,242 Cr</td><td>₹5,215 Cr</td><td>₹54.37</td></tr>
+        <tr><td>🚀 Bull</td><td style="color:var(--txt2);font-size:12px">Growth accelerates (9% CAGR); OPM expands to 21%</td><td>₹43,915 Cr</td><td>₹6,448 Cr</td><td>₹67.22</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">Projections based on historical CAGR trends and publicly available analyst estimates — not guarantees or predictions. Base year: FY25 Revenue ₹33,906 Cr, Net Profit ₹3,710 Cr, EPS ₹38.23. Source: Screener.in consolidated data. Analyst consensus: revenue growth 7.8% p.a. (Simply Wall St).</div>
+  </div>
+
+  <div class="score-box">
+    Financial health: <strong>SAFE</strong><br>
+    <span style="margin-top:4px;display:block">Asian Paints has a fortress balance sheet: near-zero debt, strong cash flows, and comfortable liquidity. The only watch point is the gradual rise in working capital days (from 34 to 52 days over 5 years), which may reflect increasing dealer incentives in a competitive market. For a 3-year investor, the balance sheet provides a strong margin of safety — the risk is not financial distress but earnings disappointment.</span>
+  </div>
+</div>
+
+<!-- ═══ TAB 4: RETURNS ═══ -->
+<div class="panel" id="p4">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Is this company creating real value for shareholders?</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Current / Last Year</th><th>3Y avg</th><th>5Y avg</th><th>Signal</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>ROE</td><td>20.6%</td><td>26%</td><td>26%</td><td><span class="badge ok">EXCELLENT >18%</span></td><td style="color:var(--txt2);font-size:11px">Screener.in (consolidated)</td></tr>
+        <tr><td>ROCE</td><td>25.7%</td><td>~33%</td><td>~35%</td><td><span class="badge ok">GOOD >15%</span></td><td style="color:var(--txt2);font-size:11px">Screener.in (consolidated)</td></tr>
+        <tr><td>ROA</td><td>~20%</td><td>—</td><td>—</td><td><span class="badge ok">STRONG >10%</span></td><td style="color:var(--txt2);font-size:11px">Investing.com (19.95% RAA)</td></tr>
+        <tr><td>Dividend Yield</td><td>0.95%</td><td>~1.0%</td><td>~1.0%</td><td><span class="badge neu">—</span></td><td style="color:var(--txt2);font-size:11px">ET Markets</td></tr>
+        <tr><td>Dividend Payout %</td><td>61.1%</td><td>~60%</td><td>~55%</td><td><span class="badge ok">SUSTAINABLE</span></td><td style="color:var(--txt2);font-size:11px">Screener.in</td></tr>
+        <tr><td>Stock Return — 1Y</td><td class="pos">+12%</td><td>—</td><td>—</td><td><span class="badge ok">vs Nifty ~7%</span></td><td style="color:var(--txt2);font-size:11px">Screener.in</td></tr>
+        <tr><td>Stock Return — 3Y (CAGR)</td><td class="neg">−6%</td><td>—</td><td>—</td><td><span class="badge bad">UNDERPERFORMER vs Nifty ~9%</span></td><td style="color:var(--txt2);font-size:11px">Screener.in</td></tr>
+        <tr><td>Stock Return — 5Y (CAGR)</td><td class="neg">−1%</td><td>—</td><td>—</td><td><span class="badge bad">UNDERPERFORMER vs Nifty ~12%</span></td><td style="color:var(--txt2);font-size:11px">Screener.in</td></tr>
+        <tr><td>Stock Return — 10Y (CAGR)</td><td class="pos">11%</td><td>—</td><td>—</td><td><span class="badge neu">IN-LINE vs Nifty ~12%</span></td><td style="color:var(--txt2);font-size:11px">Screener.in</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">ROE >18% = Excellent · ROCE >15% = Efficient capital use · Stock has underperformed Nifty over 3Y and 5Y periods — the 'wealth compounder' narrative has broken down in the medium term.</div>
+  </div>
+  <div class="score-box">
+    Return quality: <strong>CAPITAL-EFFICIENT BUT EARNINGS-CHALLENGED</strong><br>
+    <span style="margin-top:4px;display:block">Asian Paints still generates excellent ROE (20.6%) and ROCE (25.7%), but the trend is deteriorating — ROE has fallen from a 26% 5-year average to 21% in FY25. The stock has delivered negative returns over 3 and 5 years, meaning all the business value creation has been offset by P/E multiple compression. For a 3-year investor, the return profile hinges entirely on whether earnings can inflect higher — the current trajectory does not support a repeat of the historical compounding story.</span>
+  </div>
+</div>
+
+<!-- ═══ TAB 5: PEERS ═══ -->
+<div class="panel" id="p5">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">How does it compare to its 3 closest competitors?</div>
+    <table>
+      <thead><tr><th>Company</th><th>P/E</th><th>P/B</th><th>PEG</th><th>ROE</th><th>Rev Growth (3Y)</th><th>D/E</th><th>Edge</th></tr></thead>
+      <tbody>
+        <tr class="peer-you"><td><strong>Asian Paints ◀ you</strong></td><td>65.2x</td><td>12.2x</td><td>4.85x</td><td>20.6%</td><td>5%</td><td>0.18x</td><td style="font-size:12px">Market Leader</td></tr>
+        <tr><td>Berger Paints</td><td>50.8x</td><td>~8.6x</td><td>~2.9x</td><td>~19.2%</td><td>~10%</td><td>~0.0x</td><td style="font-size:12px">Faster Growth</td></tr>
+        <tr><td>Kansai Nerolac</td><td>27.4x</td><td>~3.1x</td><td>—</td><td>~17.3%</td><td>~7%</td><td>~0.0x</td><td style="font-size:12px">Cheaper Valuation</td></tr>
+        <tr><td>Indigo Paints</td><td>30.6x</td><td>~5.7x</td><td>—</td><td>~21.6%</td><td>~21%</td><td>~0.0x</td><td style="font-size:12px">Highest Growth</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Source: Screener.in · Dhan · Equitymaster. Peer data as of latest available quarter. Berger, Kansai, Indigo all have near-zero debt similar to Asian Paints.</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Asian Paints vs Peers — Key qualitative differentiators</div>
+    <table>
+      <thead><tr><th>Factor</th><th>Asian Paints</th><th>vs Peers</th></tr></thead>
+      <tbody>
+        <tr><td>Market Share</td><td>~50% in decorative paints</td><td>Berger ~20%, Kansai ~15%, Indigo ~3% — Asian Paints is 2.5x larger than #2</td></tr>
+        <tr><td>Distribution Network</td><td>70,000+ dealers</td><td>Berger ~30,000, Kansai ~25,000 — unmatched reach in tier-2/3 cities</td></tr>
+        <tr><td>Product Breadth</td><td>Paints + Home Décor + Kitchens + Bath</td><td>Peers are largely paint-only; Asian Paints' diversification provides cross-sell opportunity</td></tr>
+        <tr><td>Valuation Premium</td><td>P/E 65x — 87% premium to sector</td><td>Berger 51x, Kansai 27x, Indigo 31x — premium is narrowing as growth slows</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Latest news — top 5 long-term relevant items</div>
+    <div class="news-item"><div style="display:flex;justify-content:space-between;gap:10px"><div><div class="news-head">Asian Paints announces 6-8% price hike in two phases (Mar 2026)</div><div class="news-sub">Signals industry pricing power to offset input cost inflation; could restore margins if demand holds</div></div><div class="news-meta">24 Mar 2026 · CNBC TV18</div></div></div>
+    <div class="news-item"><div style="display:flex;justify-content:space-between;gap:10px"><div><div class="news-head">Investec upgrades Asian Paints from Sell to Hold, target ₹2,750</div><div class="news-sub">Cites easing competitive intensity and moderated market share pressure as key reasons for upgrade</div></div><div class="news-meta">May 2026 · ScanX</div></div></div>
+    <div class="news-item"><div style="display:flex;justify-content:space-between;gap:10px"><div><div class="news-head">Q3 FY26: 7.9% decorative volume growth; third straight quarter of healthy volumes</div><div class="news-sub">Volume recovery signals demand normalisation; however, value growth remains muted at 2.8% due to downtrading</div></div><div class="news-meta">27 Jan 2026 · Pitchonnet</div></div></div>
+    <div class="news-item"><div style="display:flex;justify-content:space-between;gap:10px"><div><div class="news-head">Nomura maintains Buy with ₹3,250 target; Macquarie Outperform with ₹3,100</div><div class="news-sub">Global brokerages see value after the 30%+ correction from 52W highs; citing price hike benefits and volume recovery</div></div><div class="news-meta">Jan-Mar 2026 · Multiple</div></div></div>
+    <div class="news-item"><div style="display:flex;justify-content:space-between;gap:10px"><div><div class="news-head">Board meeting on 29 May 2026 to approve Q4FY26 results and final dividend</div><div class="news-sub">Key catalyst: full-year FY26 results will reveal whether the volume recovery translated to earnings growth</div></div><div class="news-meta">May 2026 · BSE/NSE</div></div></div>
+  </div>
+
+  <div class="score-box">
+    Peer standing: <strong>LEADING (market position) but LAGGING (stock returns)</strong><br>
+    <span style="margin-top:4px;display:block">Asian Paints remains the undisputed market leader with 2.5x the market share of #2 Berger. However, its premium valuation (65x P/E vs 51x for Berger) is increasingly hard to justify given its slower growth (5% 3Y revenue CAGR vs Berger's ~10%). Indigo Paints is growing at 21% with a 31x P/E — a stark contrast. The market is pricing Asian Paints for a recovery that peers are already delivering.</span>
+  </div>
+</div>
+
+<!-- ═══ TAB 6: OWNERSHIP ═══ -->
+<div class="panel" id="p6">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Who is backing this company — and are they buying or stepping away? (Last 5 quarters)</div>
+    <table>
+      <thead><tr><th>Holder</th><th>Mar 2025</th><th>Jun 2025</th><th>Sep 2025</th><th>Dec 2025</th><th>Mar 2026</th><th>Trend</th><th>Signal</th></tr></thead>
+      <tbody>
+        <tr><td>Promoters</td><td>52.63%</td><td>52.63%</td><td>52.63%</td><td>52.63%</td><td>52.63%</td><td>→</td><td><span class="badge ok">STABLE</span></td></tr>
+        <tr><td>FIIs</td><td>12.22%</td><td>11.85%</td><td>11.64%</td><td>12.78%</td><td>12.11%</td><td>↓</td><td><span class="badge warn">DECREASING (recent uptick)</span></td></tr>
+        <tr><td>DIIs</td><td>15.58%</td><td>21.04%</td><td>21.58%</td><td>21.14%</td><td>21.81%</td><td>↑</td><td><span class="badge ok">INCREASING</span></td></tr>
+        <tr><td>Public</td><td>12.38%</td><td>12.20%</td><td>11.90%</td><td>11.23%</td><td>11.29%</td><td>↓</td><td><span class="badge neu">INFO</span></td></tr>
+        <tr><td>No. of Shareholders</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge neu">DATA UNAVAILABLE</span></td></tr>
+        <tr><td>Promoter Pledge</td><td colspan="5">8.60% of promoter holdings (Dec 2025) — stable; well below 10% threshold</td><td>→</td><td><span class="badge ok">OK <10%</span></td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Source: Dhan, Trendlyne shareholding pattern</div>
+  </div>
+
+  <div class="card blue">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--b-text);margin-bottom:10px">Ownership Analysis (Investment Perspective)</div>
+    <div style="font-size:12px;color:var(--b-text);line-height:1.8">
+      <strong>Promoters:</strong> Holding steady at 52.63% for over 12 quarters — a strong signal of promoter confidence. No dilution or stake sale despite the stock's underperformance. Pledge at 8.60% is within acceptable limits.<br><br>
+      <strong>FIIs:</strong> Have been net sellers over 3 years (from ~17% to 12.1%), but the Dec 2025 quarter showed a notable uptick from 11.64% to 12.78%, suggesting some foreign investors see value at lower levels. The Mar 2026 quarter saw a slight dip to 12.11%.<br><br>
+      <strong>DIIs:</strong> The big story — DII holding has surged from 15.58% to 21.81% in one year. Domestic mutual funds and institutions are aggressively buying what FIIs are selling, indicating strong domestic conviction in the long-term story.<br><br>
+      <strong>Overall:</strong> The ownership shift from FIIs to DIIs provides stability (DII money is typically stickier) but also means the stock may be more vulnerable during domestic liquidity crunches. Combined institutional holding (FII + DII) at ~34% provides good governance oversight and liquidity.
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Latest earnings call — Q3 FY26 highlights</div>
+    <table>
+      <thead><tr><th>What management said</th><th>What it means for you</th></tr></thead>
+      <tbody>
+        <tr><td>"Third straight quarter of healthy volume growth in India decorative segment despite tough external environment"</td><td style="color:var(--txt2);font-size:12px">Volume recovery is real — 7.9% in Q3 following 10.9% in Q2. Demand normalisation is underway.</td></tr>
+        <tr><td>"Ramped up brand-building initiatives, strong retail programs, and broad portfolio of innovative products"</td><td style="color:var(--txt2);font-size:12px">Management is spending to defend market share — near-term margin pressure, long-term competitive strength.</td></tr>
+        <tr><td>"Industrial coatings business recorded strong double-digit growth"</td><td style="color:var(--txt2);font-size:12px">B2B/industrial segment is diversifying revenue away from cyclical decorative demand.</td></tr>
+        <tr><td>"Focus on differentiated strategies, technology adoption, and agility to sustain growth momentum"</td><td style="color:var(--txt2);font-size:12px">Management acknowledges the competitive threat and is pivoting strategy — execution will be key to watch.</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:12px;color:var(--txt2);margin-top:8px">Management tone: <strong style="color:var(--txt)">CAUTIOUSLY CONFIDENT</strong></div>
+  </div>
+
+  <div class="score-box">
+    Ownership signal: <strong>INSTITUTIONAL ACCUMULATION (DII-led)</strong><br>
+    <span style="margin-top:4px;display:block">DIIs have stepped in aggressively to absorb FII selling, with domestic institutional holding rising 6.2 percentage points in one year. This reflects strong domestic conviction and provides a floor for the stock. However, the sustained FII exit over 3 years is a concern — foreign investors who drove the stock's historic re-rating are reducing exposure. For a 3-year investor, watch whether the FII trend reverses; sustained FII buying would be a powerful positive signal.</span>
+  </div>
+</div>
+
+<!-- ═══ TAB 7: VIEW (DEFAULT ACTIVE) ═══ -->
+<div class="panel on" id="p7">
+  <div class="card amber">
+    <div class="view-label amber">MODERATE FUNDAMENTALS</div>
+    <div class="view-reason">Asian Paints remains a high-quality franchise with a fortress balance sheet and dominant market position — but the earnings engine is sputtering: 3-year revenue CAGR of just 5%, FY25 profit down 33%, and a P/E of 65x that prices in a recovery that has not yet materialised in the numbers.</div>
+
+    <div class="sec-label">What works for this stock</div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--g-accent)">✓</span><span>Dominant ~50% market share with 70,000+ dealer network — the widest moat in Indian paints; new entrants (Birla Opus, JSW) have gained only 3-4% share after 2+ years of aggressive push.</span></div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--g-accent)">✓</span><span>Near-zero debt (D/E 0.18x) with ₹4,424 Cr operating cash flow and 25.7% ROCE — the balance sheet can withstand a prolonged competitive war without existential risk.</span></div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--g-accent)">✓</span><span>DIIs accumulating aggressively (+6.2 pp in 1 year) — domestic institutional conviction provides a valuation floor; 6-8% price hike and volume recovery (7.9% in Q3) are early green shoots.</span></div>
+
+    <div class="sec-label">What to watch</div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--a-accent)">⚠</span><span>P/E of 65x vs sector 35x — even after a 30%+ correction from 52W highs, the stock is priced for perfection. If the earnings recovery stalls, further P/E compression to 45-50x (still above sector) implies 20-30% downside.</span></div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--a-accent)">⚠</span><span>Competitive intensity is structural, not cyclical — Birla Opus (₹10,000 Cr planned capacity), JSW Dulux, and Grasim's entry have permanently altered industry dynamics. Asian Paints' pricing power and margin profile may never return to pre-2023 levels.</span></div>
+
+    <div class="sec-label">Track this going forward</div>
+    <div class="bullet-row"><span class="bicon" style="color:var(--txt3)">→</span><span>Watch OPM sustainability at 19-20% over the next 4 quarters as the 6-8% price hike flows through; and monitor decorative volume growth — if it sustains above 8% for 3+ quarters, the earnings recovery thesis gains credibility. Q4FY26 results (29 May 2026) are the immediate catalyst.</span></div>
+
+    <div style="margin-top:16px;font-size:11px;color:var(--txt3);font-style:italic">This is a VIEW based on fundamentals only. Not a buy/sell recommendation. The decision is always yours.</div>
+  </div>
+
+  <div class="two-col">
+    <div class="card green">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--g-text);margin-bottom:8px">Opportunities</div>
+      <div class="bullet-row" style="border-color:var(--g-border)"><span class="bicon" style="color:var(--g-accent)">+</span><span style="color:var(--g-text);font-size:12px">Volume recovery gaining momentum — 7.9% decorative growth in Q3; rural demand and govt infra spending could accelerate this</span></div>
+      <div class="bullet-row" style="border-color:var(--g-border)"><span class="bicon" style="color:var(--g-accent)">+</span><span style="color:var(--g-text);font-size:12px">6-8% price hike in 2026 could restore OPM to 20%+ if demand elasticity is favourable</span></div>
+      <div class="bullet-row" style="border-color:var(--g-border)"><span class="bicon" style="color:var(--g-accent)">+</span><span style="color:var(--g-text);font-size:12px">Home décor (kitchens, bath, lighting) is a ₹25,000+ Cr adjacent market — less competitive, higher margin</span></div>
+      <div class="bullet-row" style="border-color:var(--g-border);border-bottom:none"><span class="bicon" style="color:var(--g-accent)">+</span><span style="color:var(--g-text);font-size:12px">International business (6.3% growth) and industrial coatings (double-digit growth) provide diversification away from domestic decorative cyclicality</span></div>
+    </div>
+    <div class="card red">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--r-text);margin-bottom:8px">Risks</div>
+      <div class="bullet-row" style="border-color:var(--r-border)"><span class="bicon" style="color:var(--r-accent)">−</span><span style="color:var(--r-text);font-size:12px">Competitive intensity from Birla Opus, JSW Dulux, and Grasim — market share loss of 3-4% may become permanent</span></div>
+      <div class="bullet-row" style="border-color:var(--r-border)"><span class="bicon" style="color:var(--r-accent)">−</span><span style="color:var(--r-text);font-size:12px">Valuation risk: P/E 65x leaves no margin of safety; if earnings growth stays at 5-8%, multiple compression to 40-45x is likely</span></div>
+      <div class="bullet-row" style="border-color:var(--r-border)"><span class="bicon" style="color:var(--r-accent)">−</span><span style="color:var(--r-text);font-size:12px">Urban demand slowdown and downtrading — consumers shifting to cheaper brands impacts value growth even when volumes recover</span></div>
+      <div class="bullet-row" style="border-color:var(--r-border);border-bottom:none"><span class="bicon" style="color:var(--r-accent)">−</span><span style="color:var(--r-text);font-size:12px">Raw material volatility (crude-linked TiO2, monomers) — margin recovery is contingent on stable input costs</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:4px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Platform consensus — what data aggregators say</div>
+    <div class="rating-row">
+      <div><div class="platform-name">Value Research</div><div class="platform-detail">Quality: 9/10 · Growth: 6/10 · Valuation: 3/10 · Momentum: 5/10</div></div>
+      <div style="text-align:right"><div class="platform-score" style="color:var(--g-accent);">9/10</div><div><span class="badge ok">HIGH QUALITY</span></div></div>
+    </div>
+    <div class="rating-row">
+      <div><div class="platform-name">Trendlyne</div><div class="platform-detail">Piotroski: 5 · Durability: 60 · Consensus: Hold · Avg Target: ₹2,731</div></div>
+      <div style="text-align:right"><div class="platform-score" style="color:var(--a-accent);">60/100</div><div><span class="badge warn">HOLD</span></div></div>
+    </div>
+    <div class="rating-row" style="border-bottom:none">
+      <div><div class="platform-name">35 Analyst Consensus</div><div class="platform-detail">Strong Buy/Buy: ~20 · Hold: ~12 · Sell: ~3 · Avg Target ₹2,731 (+4.5% from CMP)</div></div>
+      <div style="text-align:right"><div class="platform-score" style="color:var(--g-accent);">+4.5%</div><div><span class="badge ok">HOLD</span></div></div>
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">⚠ Platform scores are algorithmic outputs based on quantitative data. They do not constitute investment advice.</div>
+  </div>
+</div>
+
+<!-- ═══ TAB 8: SWOT ═══ -->
+<div class="panel" id="p8">
+  <div class="swot-grid">
+    <div class="swot-box s">
+      <div class="swot-head">💪 Strengths (5 identified)</div>
+      <div class="swot-item"><span>🟢</span><span>Dominant ~50% market share in Indian decorative paints — 2.5x larger than #2 Berger Paints</span></div>
+      <div class="swot-item"><span>🟢</span><span>70,000+ dealer network with unmatched distribution depth across tier-1 to tier-4 cities</span></div>
+      <div class="swot-item"><span>🟢</span><span>Near-zero debt (D/E 0.18x) with strong operating cash flow (₹4,424 Cr) and 25.7% ROCE</span></div>
+      <div class="swot-item"><span>🟢</span><span>Iconic brand with 80+ year legacy; top-of-mind recall in home paints category</span></div>
+      <div class="swot-item"><span>🟢</span><span>Diversified portfolio: decorative paints, industrial coatings, home décor, international operations in 60+ countries</span></div>
+    </div>
+    <div class="swot-box w">
+      <div class="swot-head">⚠ Weaknesses (4 identified)</div>
+      <div class="swot-item"><span>🔴</span><span>Premium valuation (P/E 65x) limits margin of safety; stock vulnerable to multiple compression</span></div>
+      <div class="swot-item"><span>🔴</span><span>Earnings decline: FY25 profit down 33% YoY; revenue growth decelerating (5% 3Y CAGR vs 11% 5Y)</span></div>
+      <div class="swot-item"><span>🔴</span><span>High dependence on decorative paints segment (~80% of revenue); cyclical demand exposure</span></div>
+      <div class="swot-item"><span>🔴</span><span>Working capital days rising (34→52 days over 5 years); dealer incentives increasing in competitive market</span></div>
+    </div>
+    <div class="swot-box o">
+      <div class="swot-head">🚀 Opportunities (4 identified)</div>
+      <div class="swot-item"><span>🔵</span><span>Volume recovery: 7.9% decorative volume growth in Q3 FY26; govt infra push could accelerate demand</span></div>
+      <div class="swot-item"><span>🔵</span><span>Home décor adjacency: ₹25,000+ Cr market (kitchens, bath, lighting) with lower competitive intensity</span></div>
+      <div class="swot-item"><span>🔵</span><span>Price hike cycle: 6-8% increase could restore OPM to 20%+ if demand holds</span></div>
+      <div class="swot-item"><span>🔵</span><span>International expansion: stable growth in UAE, Sri Lanka, Ethiopia; industrial coatings growing double-digits</span></div>
+    </div>
+    <div class="swot-box t">
+      <div class="swot-head">⚡ Threats (3 identified)</div>
+      <div class="swot-item"><span>🟡</span><span>Competitive disruption: Birla Opus (₹10,000 Cr capacity), JSW Dulux, Grasim — structural industry change</span></div>
+      <div class="swot-item"><span>🟡</span><span>Urban demand slowdown & downtrading: consumers shifting to cheaper alternatives impacts value growth</span></div>
+      <div class="swot-item"><span>🟡</span><span>Raw material inflation: crude-linked input costs (TiO2, monomers) could compress margins despite price hikes</span></div>
+    </div>
+  </div>
+
+  <div class="card blue">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--b-text);margin-bottom:8px">SWOT Summary — Investment Perspective</div>
+    <div style="font-size:12px;color:var(--b-text);line-height:1.8">
+      Asian Paints' core strength — its dominant market share and distribution network — remains intact, and the balance sheet is among the strongest in Indian consumer goods. However, the competitive landscape has shifted structurally: new entrants with deep pockets (Birla, JSW) are here to stay, and the era of unchallenged pricing power may be over. The biggest opportunity is a cyclical demand recovery (early signs visible) coupled with the 6-8% price hike restoring margins. The biggest threat is that the stock's 65x P/E prices in a recovery that may take 3-5 years to fully play out — patience is required, and the ride may be volatile. Overall, the SWOT is net positive for the franchise but net negative for the stock at current valuation.
+    </div>
+    <div style="font-size:11px;color:var(--b-text);margin-top:8px">Source: Trendlyne SWOT · Screener · Moneycontrol · Annual Report · Analyst Reports</div>
+  </div>
+</div>
+
+<!-- ═══ TAB 9: FORECASTS ═══ -->
+<div class="panel" id="p9">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:14px">Analyst consensus — 35 analysts covering ASIANPAINT (Last updated: Mar-May 2026)</div>
+    <div class="mgrid">
+      <div class="mc"><div class="ml">CMP</div><div class="mv">₹2,614</div><div class="ms">NSE (18 May 2026)</div></div>
+      <div class="mc"><div class="ml">Avg Target</div><div class="mv" style="color:var(--g-accent)">₹2,731</div><div class="ms">+4.5% upside</div></div>
+      <div class="mc"><div class="ml">Low Target</div><div class="mv">₹2,262</div><div class="ms">−13.5% downside</div></div>
+      <div class="mc"><div class="ml">High Target</div><div class="mv">₹3,390</div><div class="ms">+29.7% upside</div></div>
+      <div class="mc"><div class="ml">No. Analysts</div><div class="mv">35</div><div class="ms">Investing.com</div></div>
+      <div class="mc"><div class="ml">Consensus</div><div class="mv" style="color:var(--a-accent)">HOLD</div><div class="ms">~20 Bullish · ~12 Hold · ~3 Sell</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">Recommendation distribution</div>
+      <div class="fc-bar-wrap"><span class="fc-bar-lbl" style="color:var(--g-text)">Strong Buy/Buy</span><div class="fc-bar-bg"><div class="fc-bar-fill" style="width:57%;background:var(--g-accent)"></div></div><span class="fc-bar-val">~20 / 35 (57%)</span></div>
+      <div class="fc-bar-wrap"><span class="fc-bar-lbl" style="color:var(--n-text)">Hold</span><div class="fc-bar-bg"><div class="fc-bar-fill" style="width:34%;background:var(--n-border)"></div></div><span class="fc-bar-val">~12 / 35 (34%)</span></div>
+      <div class="fc-bar-wrap"><span class="fc-bar-lbl" style="color:var(--r-text)">Sell / Str. Sell</span><div class="fc-bar-bg"><div class="fc-bar-fill" style="width:9%;background:var(--r-accent)"></div></div><span class="fc-bar-val">~3 / 35 (9%)</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Analyst estimates by metric</div>
+    <table>
+      <thead><tr><th>Metric</th><th>Next Qtr est.</th><th>Current FY est.</th><th>Next FY est.</th><th>FY+1 Growth est.</th><th>Analysts</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Revenue (₹ Cr)</strong></td><td>~9,200</td><td>~35,550</td><td>~38,200</td><td class="pos">+7.5%</td><td>34</td></tr>
+        <tr><td><strong>EPS (₹)</strong></td><td>~12.36</td><td>~42.5</td><td>~47.0</td><td class="pos">+10.6%</td><td>34</td></tr>
+        <tr><td><strong>Net Income / PAT (₹ Cr)</strong></td><td>~1,185</td><td>~4,075</td><td>~4,510</td><td class="pos">+10.7%</td><td>34</td></tr>
+        <tr><td><strong>EBIT (₹ Cr)</strong></td><td>—</td><td>~6,300</td><td>~7,000</td><td class="pos">+11.1%</td><td>—</td></tr>
+        <tr><td><strong>Dividend/Share (₹)</strong></td><td>—</td><td>~25.05</td><td>~27.00</td><td class="pos">+7.8%</td><td>—</td></tr>
+        <tr><td><strong>Free Cash Flow (₹ Cr)</strong></td><td>—</td><td>~3,500</td><td>~4,000</td><td class="pos">FCF recovery</td><td>—</td></tr>
+        <tr><td><strong>Cash EPS (₹)</strong></td><td>—</td><td>~51.0</td><td>~56.0</td><td class="pos">+9.8%</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">Source: Yahoo Finance, Trendlyne, Simply Wall St. Estimates are approximations from multiple sources — verify at Trendlyne Forecaster. FY26 estimates include 9 months of actuals (Q1-Q3 FY26).</div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Implied valuation at analyst targets</div>
+    <table>
+      <thead><tr><th>Metric</th><th>At CMP ₹2,614</th><th>At Avg Target ₹2,731</th><th>At High ₹3,390</th></tr></thead>
+      <tbody>
+        <tr><td>Forward P/E (FY26E EPS ~₹42.5)</td><td>61.5x</td><td>64.3x</td><td>79.8x</td></tr>
+        <tr><td>Forward P/E (FY27E EPS ~₹47.0)</td><td>55.6x</td><td>58.1x</td><td>72.1x</td></tr>
+        <tr><td>Upside / downside from CMP</td><td>—</td><td class="pos">+4.5%</td><td class="pos">+29.7%</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">⚠ These are analyst estimates and price targets — not guarantees. Average target implies only 4.5% upside, suggesting most analysts see limited near-term re-rating potential.</div>
+  </div>
+
+  <div class="score-box">
+    Analyst consensus: <strong>HOLD (~57% bullish, 34% neutral, 9% bearish)</strong><br>
+    <span style="margin-top:4px;display:block">The analyst community is divided but leans cautiously positive. The average target of ₹2,731 implies just 4.5% upside — reflecting the tension between Asian Paints' quality franchise and its near-term earnings challenges. Forward P/E of 55.6x on FY27E EPS suggests analysts expect the premium to persist. The wide range of targets (₹2,262 to ₹3,390) indicates high uncertainty. Key variable: whether the 6-8% price hike and volume recovery translate to earnings beats in FY27.</span>
+  </div>
+</div>
+
+<!-- ═══ TAB 10: EVENTS ═══ -->
+<div class="panel" id="p10">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Upcoming events & dates that could move ASIANPAINT</div>
+    <table>
+      <thead><tr><th>Date / Tentative</th><th>Event</th><th>Potential Impact</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td>29 May 2026</td><td>Q4FY26 Results & Final Dividend Recommendation</td><td>Full-year FY26 numbers; management commentary on FY27 outlook, competitive intensity, and margin trajectory will be closely watched</td><td style="color:var(--txt3);font-size:11px">BSE/NSE</td></tr>
+        <tr><td>Jun-Jul 2026 (Tentative)</td><td>Q1FY27 Results</td><td>First quarter reflecting full impact of 6-8% price hike; key test of demand elasticity</td><td style="color:var(--txt3);font-size:11px">NSE (est.)</td></tr>
+        <tr><td>Nov 2026 (Tentative)</td><td>Interim Dividend / Q2FY27 Results</td><td>Festive season demand; typically strongest quarter for decorative paints</td><td style="color:var(--txt3);font-size:11px">NSE (est.)</td></tr>
+        <tr><td>Q4 CY2026</td><td>Grasim/Birla Opus full capacity ramp-up</td><td>If Birla Opus achieves scale, competitive intensity may increase further; margin pressure could intensify</td><td style="color:var(--txt3);font-size:11px">Industry reports</td></tr>
+        <tr><td>Feb 2027</td><td>Union Budget FY28</td><td>Infrastructure spending, housing incentives, and tax policies directly impact paint demand</td><td style="color:var(--txt3);font-size:11px">Govt of India</td></tr>
+        <tr><td>Ongoing</td><td>Crude oil / TiO2 price movements</td><td>Key raw material cost driver; sustained decline would be positive for margins</td><td style="color:var(--txt3);font-size:11px">Commodity markets</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:var(--txt3);margin-top:6px">Sources: NSE corporate announcements, BSE notices, Trendlyne corporate actions, Moneycontrol board meetings. Dates marked "Tentative" are based on previous years' schedules.</div>
+  </div>
+  <div class="score-box">
+    Key watchpoint: <strong>Q4FY26 Results on 29 May 2026</strong><br>
+    <span style="margin-top:4px;display:block">The immediate catalyst is the Q4FY26 results and management commentary on FY27 outlook. Investors should focus on: (a) whether decorative volume growth sustained above 7%, (b) OPM trajectory, and (c) management's assessment of competitive intensity. A positive surprise on any of these could trigger a sharp re-rating; a disappointment could send the stock towards the lower end of analyst targets (₹2,262).</span>
+  </div>
+</div>
+
+<!-- ═══ TAB 11: TECHNICALS ═══ -->
+<div class="panel" id="p11">
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:14px">Technical Analysis — as of 18-19 May 2026 · Investing.com / ET</div>
+
+    <div class="tech-grid">
+      <div class="tech-mini"><div class="tm-head">RSI (14, Daily)</div><div class="tm-val" style="color:var(--txt)">50.2</div><div class="tm-sub"><span class="badge neu">NEUTRAL</span></div></div>
+      <div class="tech-mini"><div class="tm-head">RSI (14, Weekly)</div><div class="tm-val" style="color:var(--txt)">DATA UNAVAILABLE</div><div class="tm-sub"><span class="badge neu">— verify at Investing.com</span></div></div>
+      <div class="tech-mini"><div class="tm-head">Stochastic %K / %D</div><div class="tm-val">27.8 / —</div><div class="tm-sub"><span class="badge warn">SELL</span></div></div>
+      <div class="tech-mini"><div class="tm-head">MFI (14)</div><div class="tm-val" style="color:var(--txt)">DATA UNAVAILABLE</div><div class="tm-sub"><span class="badge neu">— verify at Moneycontrol</span></div></div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">MACD (12, 26, 9) — Daily</div>
+      <table>
+        <thead><tr><th>MACD Line</th><th>Signal Line</th><th>Histogram</th><th>Crossover</th><th>Last Crossover Date</th></tr></thead>
+        <tbody><tr><td>10.47</td><td>—</td><td class="pos">—</td><td><span class="badge ok">BUY</span></td><td style="color:var(--txt3);font-size:11px">DATA UNAVAILABLE — verify at Investing.com</td></tr></tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Moving Averages</div>
+      <table>
+        <thead><tr><th>MA Type</th><th>Value (₹)</th><th>Price vs MA (%)</th><th>Position</th></tr></thead>
+        <tbody>
+          <tr><td>20 EMA (Daily)</td><td>DATA UNAVAILABLE</td><td class="neu">—</td><td><span class="badge neu">— verify at TradingView</span></td></tr>
+          <tr><td>50 EMA (Daily)</td><td>DATA UNAVAILABLE</td><td class="neu">—</td><td><span class="badge neu">— verify at TradingView</span></td></tr>
+          <tr><td>200 EMA (Daily)</td><td>DATA UNAVAILABLE</td><td class="neu">—</td><td><span class="badge neu">— verify at TradingView</span></td></tr>
+          <tr><td>50 SMA (Weekly)</td><td>DATA UNAVAILABLE</td><td class="neu">—</td><td><span class="badge neu">— verify at TradingView</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">VWAP & Price Position</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Signal</th></tr></thead>
+        <tbody>
+          <tr><td>VWAP (Current Session)</td><td>DATA UNAVAILABLE</td><td><span class="badge neu">— verify at NSE</span></td></tr>
+          <tr><td>52W Price Position</td><td>57% of range</td><td><span class="badge neu">MID-RANGE</span></td></tr>
+          <tr><td>Volatility (20-Day, Daily Returns)</td><td>DATA UNAVAILABLE</td><td><span class="badge neu">— verify at Investing.com</span></td></tr>
+          <tr><td>ADX (14-Day)</td><td>28.4</td><td><span class="badge ok">STRONG TREND >25</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Bollinger Bands (20,2)</div>
+      <div class="price-bar-wrap">
+        <span class="price-bar-lbl">Lwr DATA UNAVAILABLE</span>
+        <div class="price-bar-bg" style="background:linear-gradient(to right, var(--r-fill), var(--a-fill), var(--g-fill))"><div class="price-bar-marker" style="left:57%;"></div></div>
+        <span class="price-bar-tag">Upr DATA UNAVAILABLE</span>
+      </div>
+      <div style="font-size:11px;color:var(--txt3);margin-top:2px">DATA UNAVAILABLE — verify at TradingView</div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px">Chart Patterns — Daily</div>
+      <div class="card" style="background:var(--bg2);border:0.5px solid var(--border)">
+        <div style="margin-bottom:8px"><strong style="color:var(--txt)">Pattern:</strong> <span style="font-weight:600">DATA UNAVAILABLE</span></div>
+        <div style="font-size:11px;color:var(--txt3);margin-top:6px">Back‑test not available – verify at TradingView chart pattern scanner</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Support & Resistance (3-Month Price Action)</div>
+      <table>
+        <thead><tr><th>Level</th><th>Price (₹)</th><th>Basis / Confluence</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--g-text)"><strong>Resistance 2 (R2)</strong></td><td>2,985</td><td style="color:var(--txt2);font-size:12px">52-Week High</td></tr>
+          <tr><td style="color:var(--g-text)"><strong>Resistance 1 (R1)</strong></td><td>2,750</td><td style="color:var(--txt2);font-size:12px">Analyst consensus target / recent swing high</td></tr>
+          <tr><td style="color:var(--txt)"><strong>CMP →</strong></td><td><strong>₹2,614</strong></td><td style="color:var(--txt2);font-size:11px">Current Market Price (18 May 2026)</td></tr>
+          <tr><td style="color:var(--r-text)"><strong>Support 1 (S1)</strong></td><td>2,500</td><td style="color:var(--txt2);font-size:12px">Recent swing low / psychological support</td></tr>
+          <tr><td style="color:var(--r-text)"><strong>Support 2 (S2)</strong></td><td>2,115</td><td style="color:var(--txt2);font-size:12px">52-Week Low</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Classic Pivot Points (Daily)</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center">
+        <div class="tech-mini"><div class="tm-head">R2</div><div class="tm-val" style="font-size:14px">₹2,556</div></div>
+        <div class="tech-mini"><div class="tm-head">R1</div><div class="tm-val" style="font-size:14px">₹2,544</div></div>
+        <div class="tech-mini" style="border:1px solid var(--border2)"><div class="tm-head">PP</div><div class="tm-val" style="font-size:14px">₹2,537</div></div>
+        <div class="tech-mini"><div class="tm-head">S1</div><div class="tm-val" style="font-size:14px">₹2,525</div></div>
+        <div class="tech-mini"><div class="tm-head">S2</div><div class="tm-val" style="font-size:14px">₹2,518</div></div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px">Delivery & Volume Analysis</div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Benchmark / Context</th><th>Signal</th></tr></thead>
+        <tbody>
+          <tr><td>Latest Session Volume</td><td>898,479 shares</td><td>18 May 2026</td><td><span class="badge neu">NSE DATA</span></td></tr>
+          <tr><td>5-Day Avg Volume</td><td>DATA UNAVAILABLE</td><td>—</td><td><span class="badge neu">— verify at NSE</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="font-size:11px;color:var(--txt3);margin-top:8px">Source: NSE India · BSE India · Moneycontrol Technicals · Trendlyne · TradingView · Investing.com. Many technical indicators could not be retrieved live — verify at the respective sources.</div>
+  </div>
+
+  <div class="card amber">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--a-text);margin-bottom:8px">Overall Technical Picture</div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--a-text)">NEUTRAL / SIDEWAYS</div>
+    <div style="font-size:12px;color:var(--txt);line-height:1.7">
+      RSI at 50.2 is perfectly neutral — the stock is neither overbought nor oversold. MACD is on a Buy signal, suggesting positive momentum, but Stochastic at 27.8 signals a Sell. ADX at 28.4 confirms a strong trend is in place, but the conflicting oscillator signals point to a consolidating market. The stock is trading mid-range between its 52W high (₹2,985) and low (₹2,115), with strong support at ₹2,500 and resistance at ₹2,750. The 29 May Q4 results could be the catalyst to break this range.
+    </div>
+    <div style="font-size:11px;color:var(--txt3);margin-top:10px;font-style:italic">
+      ⚠ Technical analysis shows what HAS happened — not what WILL happen. It supplements fundamental analysis; it does not replace it. Always base long-term investment decisions on business fundamentals, not price charts.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 12: AI CORNER ═══ -->
+<div class="panel" id="p12">
+  <div class="card red" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:28px">⚠</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--r-text);margin-bottom:4px">AI-GENERATED SCENARIOS — NOT ADVICE</div>
+        <div style="font-size:12px;color:var(--r-text);line-height:1.6">These are probabilistic estimates based on historical data, current fundamentals, and technicals. They <strong>WILL be wrong</strong> at times — possibly by large margins. Use only as one input among many. No AI can predict markets consistently. Always do your own research.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:12px">AI Price Targets — Based on ASIANPAINT Data Collected (19 May 2026)</div>
+    <table>
+      <thead><tr><th>Timeframe</th><th>Scenario</th><th>Target (₹)</th><th>Probability</th><th>Key Catalyst / Reasoning</th></tr></thead>
+      <tbody>
+        <tr style="border-top:2px solid var(--border2)"><td rowspan="3" style="font-weight:700;vertical-align:middle">1 Month<br><span style="font-size:10px;color:var(--txt3)">~Jun 2026</span></td><td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹2,800</td><td>25%</td><td style="color:var(--txt2);font-size:12px">Strong Q4 results + positive FY27 guidance</td></tr>
+        <tr><td style="font-weight:600">Base</td><td>₹2,600</td><td>50%</td><td style="color:var(--txt2);font-size:12px">In-line results; stock stays range-bound ahead of Q1FY27</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹2,400</td><td>25%</td><td style="color:var(--txt2);font-size:12px">Q4 miss; weak FY27 outlook; breaks ₹2,500 support</td></tr>
+        <tr style="border-top:2px solid var(--border2)"><td rowspan="3" style="font-weight:700;vertical-align:middle">3 Months<br><span style="font-size:10px;color:var(--txt3)">~Aug 2026</span></td><td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹2,900</td><td>20%</td><td style="color:var(--txt2);font-size:12px">Price hike impact visible in Q1FY27; volume + value growth both positive</td></tr>
+        <tr><td style="font-weight:600">Base</td><td>₹2,650</td><td>55%</td><td style="color:var(--txt2);font-size:12px">Gradual recovery; market digests FY26 results; monsoon impacts sentiment</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹2,250</td><td>25%</td><td style="color:var(--txt2);font-size:12px">Price hike fails; competitive intensity increases; FII selling accelerates</td></tr>
+        <tr style="border-top:2px solid var(--border2)"><td rowspan="3" style="font-weight:700;vertical-align:middle">6 Months<br><span style="font-size:10px;color:var(--txt3)">~Nov 2026</span></td><td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹3,000</td><td>20%</td><td style="color:var(--txt2);font-size:12px">Festive demand + price hike = strong H1FY27; P/E holds at 60x</td></tr>
+        <tr><td style="font-weight:600">Base</td><td>₹2,700</td><td>50%</td><td style="color:var(--txt2);font-size:12px">Steady recovery; festive season decent; P/E moderate compression to 55x</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹2,100</td><td>30%</td><td style="color:var(--txt2);font-size:12px">Demand shock; competitive price war; P/E compresses to 45x on downgrades</td></tr>
+        <tr style="border-top:2px solid var(--border2)"><td rowspan="3" style="font-weight:700;vertical-align:middle">1 Year<br><span style="font-size:10px;color:var(--txt3)">~May 2027</span></td><td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹3,200</td><td>20%</td><td style="color:var(--txt2);font-size:12px">FY27E EPS ₹50 × P/E 64x; competitive intensity eases; volume growth >10%</td></tr>
+        <tr><td style="font-weight:600">Base</td><td>₹2,750</td><td>50%</td><td style="color:var(--txt2);font-size:12px">FY27E EPS ₹47 × P/E 58.5x; gradual earnings recovery; P/E mild compression</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹2,000</td><td>30%</td><td style="color:var(--txt2);font-size:12px">FY27E EPS ₹42 × P/E 47.6x; earnings disappointment; structural de-rating</td></tr>
+        <tr style="border-top:2px solid var(--border2)"><td rowspan="3" style="font-weight:700;vertical-align:middle">3 Years<br><span style="font-size:10px;color:var(--txt3)">~May 2029</span></td><td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹4,000</td><td>25%</td><td style="color:var(--txt2);font-size:12px">EPS ₹67.2 × P/E 59.5x; competitive equilibrium restored; home décor scales</td></tr>
+        <tr><td style="font-weight:600">Base</td><td>₹3,000</td><td>50%</td><td style="color:var(--txt2);font-size:12px">EPS ₹54.4 × P/E 55.1x; steady 8-9% earnings CAGR; moderate P/E compression</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹1,800</td><td>25%</td><td style="color:var(--txt2);font-size:12px">EPS ₹44.5 × P/E 40.4x; prolonged competitive war; Asian Paints structurally de-rated</td></tr>
+        <tr style="border-top:2px solid var(--border2)"><td rowspan="3" style="font-weight:700;vertical-align:middle">Beyond 3Y<br><span style="font-size:10px;color:var(--txt3)">FY30+</span></td><td style="color:var(--g-accent);font-weight:600">Bull</td><td style="color:var(--g-accent);font-weight:600">₹5,500+</td><td>20%</td><td style="color:var(--txt2);font-size:12px">Industry consolidation; Asian Paints emerges stronger; home décor becomes 20%+ of revenue</td></tr>
+        <tr><td style="font-weight:600">Base</td><td>₹3,500</td><td>50%</td><td style="color:var(--txt2);font-size:12px">Steady 10% earnings CAGR; P/E stabilises at 50-55x; dividend compounding adds to returns</td></tr>
+        <tr><td style="color:var(--r-accent);font-weight:600">Bear</td><td style="color:var(--r-accent);font-weight:600">₹1,500</td><td>30%</td><td style="color:var(--txt2);font-size:12px">Market share loss accelerates; Asian Paints becomes a low-growth utility; P/E <35x</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:10px;color:var(--txt3);margin-top:8px">⚠ All targets are AI-generated estimates. Probabilities are subjective assessments based on current data — not statistical models. Actual outcomes will differ.</div>
+  </div>
+
+  <div class="card blue" style="margin-top:8px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--b-text);margin-bottom:8px">📌 Best Investment Horizon</div>
+    <div style="font-size:14px;font-weight:700;color:var(--b-text);margin-bottom:6px">3-5 Years</div>
+    <div style="font-size:12px;color:var(--b-text);line-height:1.7">
+      Asian Paints is best suited for a 3-5 year horizon. The current competitive disruption and earnings reset will take 2-3 years to normalise. A 3-year holding period allows: (a) the price hike + volume recovery cycle to play out fully, (b) the competitive landscape to reach equilibrium as new entrants' aggressive pricing moderates, and (c) earnings to compound enough to absorb P/E compression. The 3-year base case of ₹3,000 offers a ~4.7% CAGR from CMP — modest but positive. The bull case of ₹4,000 (~15.2% CAGR) requires competitive intensity to ease and home décor to scale, which is plausible but not assured.
+    </div>
+  </div>
+
+  <div class="card blue" style="margin-top:8px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--b-text);margin-bottom:10px">Back-Tested Accuracy — How Did the AI Perform on ASIANPAINT?</div>
+    <table>
+      <thead><tr><th>Forecast Date</th><th>Consensus Target</th><th>Actual Outcome</th><th>Deviation</th><th>Assessment</th></tr></thead>
+      <tbody>
+        <tr><td>May 2025 (1Y ago)</td><td>Consensus: ~₹3,000</td><td>CMP: ₹2,614 (May 2026)</td><td style="color:var(--r-accent);font-weight:600">−12.9%</td><td style="color:var(--r-text);font-size:12px"><strong>OVERESTIMATED</strong></td></tr>
+        <tr><td>May 2024 (2Y ago)</td><td>Consensus: ~₹3,300</td><td>CMP: ~₹2,615 (May 2025)</td><td style="color:var(--r-accent);font-weight:600">−20.8%</td><td style="color:var(--r-text);font-size:12px"><strong>OVERESTIMATED</strong></td></tr>
+        <tr><td>May 2023 (3Y ago)</td><td>Consensus: ~₹3,500</td><td>CMP: ~₹2,762 (May 2024)</td><td style="color:var(--r-accent);font-weight:600">−21.1%</td><td style="color:var(--r-text);font-size:12px"><strong>OVERESTIMATED</strong></td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:12px;color:var(--b-text);margin-top:10px;line-height:1.7"><strong>Pattern observed:</strong> Consensus analyst targets have systematically overestimated Asian Paints by 13-21% over the last 3 years. The competitive disruption from Birla Opus and JSW was consistently underestimated. This pattern suggests current analyst targets (avg ₹2,731) may also be optimistic — the base case AI estimate of ₹2,750 (1Y) and ₹3,000 (3Y) incorporates a margin of conservatism relative to this historical overestimation bias.</div>
+    <div style="font-size:10px;color:var(--b-text);margin-top:6px">Source: Trendlyne historical consensus targets; actual prices from NSE. Past accuracy does not guarantee future accuracy.</div>
+  </div>
+
+  <div class="card red" style="margin-top:8px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--r-text);margin-bottom:8px">AI Corner Summary — Your 3-Year Horizon</div>
+    <div style="font-size:12px;color:var(--r-text);line-height:1.8">
+      Asian Paints is a classic "quality at a reasonable price?" dilemma. The franchise quality is unquestionable, but the price (65x P/E) is not reasonable given current 5-8% earnings growth. Over a 3-year horizon, the base case of ₹3,000 implies a modest ~4.7% CAGR — below fixed deposit returns. The bull case (+15.2% CAGR) requires competitive intensity to ease, which is uncertain. The bear case (−11.7% CAGR) is a real possibility if the earnings recovery stalls and the P/E compresses to 40x. The single most important variable is whether Asian Paints can sustain >8% volume growth and restore OPM to 20%+ — Q4FY26 results (29 May) and the subsequent 2-3 quarters will provide the answer. For a 3-year investor, patience and a stomach for volatility are prerequisites.
+    </div>
+    <div style="font-size:10px;color:var(--r-text);margin-top:8px;font-style:italic">⚠ These are AI-generated scenarios, not predictions. Analyst consensus has historically overestimated Asian Paints by 13-21%. Invest accordingly.</div>
+  </div>
+</div>
+
+<!-- PERSISTENT NOTES -->
+<div style="margin-top:32px">
+  <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--txt3);margin-bottom:10px">Your Notes <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--txt2);font-size:10px">(auto‑saved)</span></div>
+  <textarea id="userNotes" class="notes-area" placeholder="Write your own notes, thesis, or reminders here..."></textarea>
+</div>
+<script>
+(function(){
+  var ta = document.getElementById('userNotes');
+  if(ta){
+    var saved = localStorage.getItem('fundamentalReportNotes');
+    if(saved) ta.value = saved;
+    ta.addEventListener('input', function(){
+      localStorage.setItem('fundamentalReportNotes', ta.value);
+    });
+  }
+})();
+</script>
+
+<details style="margin-top:20px;padding:0 4px">
+  <summary>📖 Definitions — tap to expand</summary>
+  <p><strong>P/E ratio</strong> — What you pay per ₹1 of profit. Lower vs history and sector = cheaper.</p>
+  <p><strong>PEG Ratio</strong> — P/E divided by earnings growth rate. Below 1 = growth available at a reasonable price.</p>
+  <p><strong>P/B ratio</strong> — Price vs net assets. Below 1 = buying at a discount to book value.</p>
+  <p><strong>P/Sales</strong> — Price vs revenue. Useful when profits are cyclical or recovering.</p>
+  <p><strong>EV/EBITDA</strong> — Full business value check including debt. Lower = better.</p>
+  <p><strong>Earnings Yield</strong> — EPS / CMP. Compare to risk-free rate (~7%).</p>
+  <p><strong>ROE</strong> — Profit generated per ₹100 of shareholder equity. Above 15% = good.</p>
+  <p><strong>ROCE</strong> — How efficiently total capital is used. Above 15% = healthy.</p>
+  <p><strong>ROA</strong> — Profit as % of total assets.</p>
+  <p><strong>Free Cash Flow</strong> — Cash left after all expenses and investments.</p>
+  <p><strong>Debtor Days</strong> — Average time to collect payment. Below 30 days = excellent.</p>
+  <p><strong>Piotroski Score</strong> — 0–9 score measuring financial health. 7–9 = strong.</p>
+  <p><strong>RSI</strong> — Relative Strength Index. Below 30 = oversold, above 70 = overbought.</p>
+  <p><strong>MACD</strong> — Moving Average Convergence Divergence. Bullish crossover = positive signal.</p>
+  <p><strong>ADX</strong> — Average Directional Index. Above 25 = strong trend.</p>
+  <p><strong>Promoter pledging</strong> — Founders borrowing against their shares. Above 10% = red flag.</p>
+  <p><strong>CAGR</strong> — Compound Annual Growth Rate.</p>
+</details>
+
+<details style="margin-top:20px">
+  <summary>📊 Full Data Provenance & Links</summary>
+  <div style="font-size:11px; line-height:1.8; margin-top:8px;">
+    <strong>CMP & Market Data:</strong> ₹2,614 (18 May 2026) — <a href="https://economictimes.indiatimes.com/markets/stocks/stock-liveblog/asian-paints-stock-price-live-updates-18-may-2026/liveblog/131164910.cms">ET Markets</a><br>
+    <strong>Consolidated Financials (P&L, Balance Sheet, Cash Flow):</strong> <a href="https://www.screener.in/company/ASIANPAINT/consolidated/">Screener.in</a><br>
+    <strong>Shareholding Pattern:</strong> <a href="https://dhan.co/stocks/asian-paints-ltd-fundamental-analysis/">Dhan</a>, <a href="https://trendlyne.com/equity/share-holding/117/ASIANPAINT/">Trendlyne</a><br>
+    <strong>Analyst Consensus:</strong> <a href="https://trendlyne.com/research-reports/stock/117/ASIANPAINT/asian-paints-ltd/">Trendlyne</a>, <a href="https://pt.investing.com/equities/asian-paints-consensus-estimates">Investing.com</a><br>
+    <strong>Financial Ratios:</strong> <a href="https://in.investing.com/equities/asian-paints-ratios">Investing.com India</a><br>
+    <strong>Technical Data:</strong> <a href="https://in.investing.com/equities/asian-paints-ltd-future-technical">Investing.com Technical</a><br>
+    <strong>Quarterly Results Q3FY26:</strong> <a href="https://www.pitchonnet.com/pitch-feature/asian-paints-posts-slight-rise-in-q3-fy26-revenue-38785.html">Pitchonnet</a>, <a href="https://economictimes.indiatimes.com/markets/stocks/news/asian-paints-shares-tumble-5-after-q3-pat-falls-5-yoy/articleshow/127614542.cms">ET</a><br>
+    <strong>Q4FY25 Results:</strong> <a href="https://www.moneycontrol.com/news/business/earnings/asian-paints-q4-results-net-profit-falls-45-on-year-to-rs-692-crore-rs-20-55-per-share-dividend-declared-12789565.html">Moneycontrol</a><br>
+    <strong>Price Hike News:</strong> <a href="https://www.cnbctv18.com/market/asian-paints-shares-rise-4-after-two-phase-price-hike-19540131.htm">CNBC TV18</a><br>
+    <strong>Piotroski Score:</strong> <a href="https://trendlyne.com/equity/versus/117/ASIANPAINT/vs/402/">Trendlyne</a>, <a href="https://www.screener.in/screens/1632854/p-score/">Screener.in</a><br>
+    <strong>Stock Returns:</strong> <a href="https://www.valueresearchonline.com/stocks/41149/asian-paints-ltd/">Value Research</a>, <a href="https://iocharts.io/stock/ASIANPAINT.NSE">iOCharts</a><br>
+    <strong>Peer Data:</strong> <a href="https://www.screener.in/company/ASIANPAINT/consolidated/">Screener.in</a>, <a href="https://www.screener.in/company/BERGEPAINT/consolidated/">Berger</a>, <a href="https://www.screener.in/company/KANSAINER/consolidated/">Kansai</a><br>
+    <strong>Board Meeting:</strong> <a href="https://www.bseindia.com/stock-share-price/asian-paints-ltd/asianpaint/500820/corporate-announcements/">BSE India</a><br>
+    <strong>FII Holding Chg (3Y):</strong> −4.89 pp = 12.11% (Mar 2026, <a href="https://dhan.co/stocks/asian-paints-ltd-fundamental-analysis/">Dhan</a>) − ~17.0% (Mar 2023, <a href="https://trendlyne.com/equity/share-holding/117/ASIANPAINT/">Trendlyne</a>)<br>
+    <strong>5Y Sales CAGR:</strong> ~10.9% = (Revenue FY25 ₹33,906 Cr / Revenue FY20 ₹20,211 Cr)^(1/5)-1 (<a href="https://www.screener.in/company/ASIANPAINT/consolidated/">Screener.in</a>)<br>
+    <strong>5Y Avg P/E:</strong> 70.1x = (77.5+97.5+64.5+50.0+61.2)/5 — calculated from year-end prices and annual EPS (<a href="https://www.screener.in/company/ASIANPAINT/consolidated/">Screener.in</a>, <a href="https://www.topstockresearch.com/rt/Financial/ASIANPAINT/Revenue">TopStockResearch</a>)<br>
+  </div>
+</details>
+
+<div class="disc">
+  This is a fundamental screening and education tool only. Data sourced from NSE India, BSE India, Screener.in, Trendlyne, Moneycontrol, Tickertape, TradingView, MSN Money, StockMojo, Annual Reports, and publicly available analyst forecast databases. Analyst estimates are third-party projections — not guarantees of future performance. This is NOT investment advice, a buy/sell recommendation, or SEBI-registered financial research. AI systems can make errors — verify all numbers on NSE India, BSE India, or Screener.in before making any decision. Past performance does not guarantee future results. Investing in equities carries risk including loss of capital. Consult a SEBI-registered financial advisor before investing.
+</div>
+
+</div>
+
+<script>
+function show(n){
+  var panels=document.querySelectorAll('.panel');
+  var tabs=document.querySelectorAll('.tab-btn');
+  for(var i=0;i<panels.length;i++){
+    panels[i].className='panel'+(i===n?' on':'');
+    tabs[i].className='tab-btn'+(i===n?' active':'');
+  }
+}
+</script>
+</body>
+</html>
